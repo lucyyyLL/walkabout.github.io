@@ -90,7 +90,7 @@ There is **no working demo yet**: the site uses GIFs/videos of the intended visi
 - Text placeholders: `<span class="ph">[...]</span>` (yellow highlight). Replace the text and remove the span.
 - Media slots: `<figure class="media" data-ph="...">`. Put `<video autoplay muted loop playsinline poster=... aria-label=...>`
   or `<img alt=...>` inside. Suggested filenames in `assets/media/README.md`. Keep clips small (720p H.264, a few MB).
-- `[team@email]` in mailto links still needs the real address.
+- Team email: walkabout.nav@gmail.com (footer, "Pilot with us", Accessibility note).
 - Waitlist / "Is my building mapped?" forms are front-end only. Connect a form service (Formspree, Google Forms) at
   the `TODO` in `assets/js/main.js`; the `MAPPED` array there lists venues that return "being mapped".
 

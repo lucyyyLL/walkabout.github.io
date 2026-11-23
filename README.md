@@ -27,7 +27,7 @@ assets/media/         Put your GIFs/videos here (see assets/media/README.md)
   </figure>
   ```
   For a GIF use `<img src="..." alt="...">` instead. Short MP4s are much smaller than GIFs and can be paused.
-- **Email:** replace `[team@email]` in the "Pilot with us" links and footer.
+- **Email:** walkabout.nav@gmail.com is used in the "Pilot with us" links, the footer and the Accessibility page.
 - **Waitlist form:** the demo shows a confirmation but doesn't send anything. GitHub Pages can't run server code,
   so connect a form service (Formspree, Getform, or a Google Form) at the `TODO` in `assets/js/main.js`.
 
