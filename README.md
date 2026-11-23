@@ -5,7 +5,7 @@ No build step and no dependencies: plain HTML, CSS and JavaScript, ready for Git
 
 ```
 index.html          Home: section-drawing hero, scenarios, pillars, where we're mapping, mission
-navigate.html       Traveler experience: how it works, route profiles, FAQ, availability check
+navigate.html       Traveler experience: how it works, route profiles, availability check
 technology.html     The pipeline: plans → 3D → network → route → section → positioning
 assets/css/style.css  All styles. Colors and type scale are variables at the top.
 assets/js/main.js     Mobile menu, route animation, "Is my building mapped?" check, profile chips

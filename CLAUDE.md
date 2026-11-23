@@ -30,7 +30,7 @@ There is **no working demo yet**: the site uses GIFs/videos of the intended visi
   (720p copy on phones) fills the first screen and plays once with Pause/Play/Replay and Skip buttons. Page scroll is
   locked while it plays (`html.is-locked`); Pause, Skip, the end, an error, a 3 s stall or a safety timer release it.
   A scroll cue shows when it ends; then the caption
-  "From Street to Room, for everybody" rises over it on scroll, then features, FAQ, building check),
+  "From Street to Room, for everybody" rises over it on scroll, then features, building check; the FAQ was removed),
   `technology.html` (two tabs: "The technology" pipeline and "How it works" four steps; `#how-it-works` opens the second).
   The headline (`.tech-stage`) pins, then the tabs and the first section slide up over it (no intro film or stage links).
   Beside the headline, `.navani` (9 s loop): the plan tilts into an axonometric 3D view as 24 stacked wall layers rise

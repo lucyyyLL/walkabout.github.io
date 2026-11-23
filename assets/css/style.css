@@ -439,7 +439,7 @@ html:has(.demo-stage) { scrollbar-gutter: stable; }
 /* Motion allowed (main.js adds .is-scrolly): the demo holds, then the caption scrolls up over it */
 .demo-stage.is-scrolly { height: 430vh; }
 /* The next section slides up over the pinned caption (overlaps the stage's last screen) */
-.demo-stage.is-scrolly + .cover-up { margin-top: -100vh; }
+.demo-stage.is-scrolly + .cover-up { margin-top: -100vh; min-height: 100vh; } /* at least as tall as the overlap, or the stage pokes out below it */
 .cover-up { position: relative; z-index: 2; background: var(--paper); border-top: 0; }
 /* No hard edge: a white fade above the panel dissolves the caption as it is covered */
 .demo-stage.is-scrolly + .cover-up::before {
