@@ -31,13 +31,14 @@ There is **no working demo yet**: the site uses GIFs/videos of the intended visi
   locked while it plays (`html.is-locked`); Pause, Skip, the end, an error, a 3 s stall or a safety timer release it.
   A scroll cue shows when it ends; then the caption
   "From Street to Room, for everybody" rises over it on scroll, then features, building check; the FAQ was removed),
-  `technology.html` (two tabs: "The technology" pipeline and "How it works" four steps; `#how-it-works` opens the second).
+  `technology.html` (two tabs: "The technology" pipeline and "How it works" demo film; `#how-it-works` opens the second).
   The headline (`.tech-stage`) pins, then the tabs and the first section slide up over it (no intro film or stage links).
   Beside the headline, `.navani` (9 s loop): the plan tilts into an axonometric 3D view as 24 stacked wall layers rise
   (CSS 3D), then a dot pulses and the blue route draws (SMIL) to a destination ring, holds, fades, and the plan settles back.
   Reduced motion: a still plan with the finished route.
-  How it works: each step loops its own segment of `walkabout-demo-720p.mp4` (`data-start`/`data-end`), plays only
-  while on screen, with a Pause/Play button; reduced motion: no autoplay.
+  How it works: the four steps were replaced by the team's portrait concept demo `assets/media/walkabout-how-it-works.mp4`
+  (720x1280, ~73 s, no sound; AR guidance to Room 516, Gund Hall; plays from 10 s to skip most of the floor scan) in a phone-shaped frame beside a short intro (`.hiw`).
+  It loops only while on screen (`.clip__video`), with a Pause/Play button; reduced motion: no autoplay.
   The six pipeline steps are one pinned SVG drawing that evolves with scroll (`.scrolly`: plan → rooms → network →
   routes → section → blue dot). Layers use `data-draw` / `data-in` / `data-out` / `data-dim` = step number; logic in
   `main.js`. Phones and reduced motion get a plain list beside a still of step 4.

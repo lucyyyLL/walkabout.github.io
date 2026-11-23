@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- Futura PT: add your Adobe Fonts kit here, e.g. <link rel="stylesheet" href="https://use.typekit.net/XXXXXXX.css">. Jost below is the free stand-in. -->
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css?v=20261123t">
+  <link rel="stylesheet" href="assets/css/style.css?v=20261123w">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -315,79 +315,23 @@
     </div>
 
     <div role="tabpanel" id="how-it-works" aria-labelledby="tab-how" tabindex="0">
-    <!-- HOW IT WORKS (moved from Navigate): a true sequence, so it's numbered -->
-    <section class="band" aria-labelledby="how-h">
-      <div class="wrap">
-        <div class="section-head">
-          <h2 id="how-h">From search to the door in four steps</h2>
-          <p class="lede">What you do as a traveler. The map behind it is built in "The technology".</p>
+    <!-- HOW IT WORKS: the concept demo film (portrait phone recording, no sound) beside a short intro.
+         Loops while on screen with a Pause button (main.js .clip__video); reduced motion: no autoplay. -->
+    <section class="band hiw" aria-labelledby="how-h">
+      <div class="wrap hiw__grid">
+        <div class="hiw__text">
+          <p class="eyebrow">How it works</p>
+          <h2 id="how-h">From search to the door</h2>
+          <p class="lede">Pick a room, then follow one route on your phone. The plan and a section view stay on screen, so you always know which floor you're on and where the next level change is.</p>
+          <p class="hint">Concept visualization, no sound.</p>
         </div>
-        <ol class="steps steps--stack">
-          <li>
-            <div>
-              <span class="step__num" aria-hidden="true"></span>
-              <h3>Choose where you're going</h3>
-              <p>Search for a room, an office or a service, not just a building. "Room 325" is a destination, not a guess.</p>
-            </div>
-            <figure class="media clip">
-              <video class="clip__video" muted playsinline preload="metadata" data-start="0.2" data-end="4.6"
-                     poster="assets/media/walkabout-demo.jpg" aria-label="Concept clip: the app asks Where to? and a route is planned to E51, Room 345.">
-                <source src="assets/media/walkabout-demo-720p.mp4" type="video/mp4">
-              </video>
-              <button class="clip__toggle" type="button">Pause</button>
-            </figure>
-          </li>
-          <li>
-            <div>
-              <span class="step__num" aria-hidden="true"></span>
-              <h3>Tell us how you're moving</h3>
-              <p>Pick one or more profiles. WalkAbout plans around all of them at once.</p>
-              <ul class="chips" aria-label="Route profiles (demo)">
-                <li><button class="chip" aria-pressed="false">Step-free</button></li>
-                <li><button class="chip" aria-pressed="false">Stroller-friendly</button></li>
-                <li><button class="chip" aria-pressed="false">Fewest level changes</button></li>
-                <li><button class="chip" aria-pressed="false">Cart or luggage</button></li>
-                <li><button class="chip" aria-pressed="false">Fastest</button></li>
-              </ul>
-              <p class="chip-note" aria-live="polite">Pick one or more. Profiles combine.</p>
-            </div>
-            <figure class="media clip">
-              <video class="clip__video" muted playsinline preload="metadata" data-start="7.9" data-end="12.6"
-                     poster="assets/media/walkabout-demo.jpg" aria-label="Concept clip: choosing the stroller profile redraws the route through the ramp entrance and the elevator.">
-                <source src="assets/media/walkabout-demo-720p.mp4" type="video/mp4">
-              </video>
-              <button class="clip__toggle" type="button">Pause</button>
-            </figure>
-          </li>
-          <li>
-            <div>
-              <span class="step__num" aria-hidden="true"></span>
-              <h3>Follow one route from the street</h3>
-              <p>Directions take you to the right entrance, then carry on inside, with landmark photos at each decision point. No switching apps at the door.</p>
-            </div>
-            <figure class="media clip">
-              <video class="clip__video" muted playsinline preload="metadata" data-start="4.7" data-end="7.9"
-                     poster="assets/media/walkabout-demo.jpg" aria-label="Concept clip: one route drawn from the street, through the entrance and over the third-floor bridge to the room.">
-                <source src="assets/media/walkabout-demo-720p.mp4" type="video/mp4">
-              </video>
-              <button class="clip__toggle" type="button">Pause</button>
-            </figure>
-          </li>
-          <li>
-            <div>
-              <span class="step__num is-level" aria-hidden="true"></span>
-              <h3>Change levels with a section view</h3>
-              <p>At every stair, ramp or elevator, a section drawing shows exactly which one to take and where it lets you out.</p>
-            </div>
-            <figure class="media clip">
-              <video class="clip__video" muted playsinline preload="metadata" data-start="12.8" data-end="16.2"
-                     poster="assets/media/walkabout-demo.jpg" aria-label="Concept clip: AR guidance on a phone, with a section view showing the elevator to level 3.">
-                <source src="assets/media/walkabout-demo-720p.mp4" type="video/mp4">
-              </video>
-              <button class="clip__toggle" type="button">Pause</button>
-            </figure>
-          </li>
-        </ol>
+        <figure class="clip hiw__phone">
+          <video class="clip__video" muted playsinline preload="metadata" data-start="10" data-end="72.4"
+                 aria-label="Concept demo, about one minute, no sound: AR guidance on a phone to Room 516, Gund Hall, with a floor plan and a section view in the corner of the screen.">
+            <source src="assets/media/walkabout-how-it-works.mp4#t=10" type="video/mp4">
+          </video>
+          <button class="clip__toggle" type="button">Pause</button>
+        </figure>
       </div>
     </section>
     <!-- FINAL CTA -->
@@ -456,6 +400,6 @@
     </div>
   </dialog>
 
-  <script src="assets/js/main.js?v=20261123t"></script>
+  <script src="assets/js/main.js?v=20261123w"></script>
 </body>
 </html>

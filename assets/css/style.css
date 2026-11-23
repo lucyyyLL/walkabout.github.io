@@ -1028,3 +1028,24 @@ html:has(.demo-stage) { scrollbar-gutter: stable; }
   .roadmap__labels li { position: static; transform: none !important; width: auto; }
 }
 @media (prefers-reduced-motion: reduce) { .roadmap__ring { animation: none; } }
+
+/* How it works: the portrait demo film beside a short intro, sized to fit one screen */
+.hiw__grid { display: grid; grid-template-columns: 1fr auto; gap: clamp(2rem, 6vw, 6rem); align-items: center; }
+.hiw__text .lede { max-width: 34rem; }
+.hiw__text .hint { margin-top: 1.2rem; color: var(--muted); font-size: var(--t-sm); }
+.hiw__phone {
+  position: relative; margin: 0; overflow: hidden; border-radius: 1.75rem;
+  height: min(calc(100vh - var(--header-h) - 12rem), 46rem); min-height: 24rem; aspect-ratio: 9 / 16;
+}
+@media (max-width: 900px) {
+  .hiw__grid { grid-template-columns: 1fr; }
+  .hiw__phone { height: auto; width: min(100%, 22rem); margin-inline: auto; }
+}
+/* The film has its own card along the bottom: keep the button clear of it, under the frame */
+.hiw__phone { overflow: visible; }
+.hiw__phone .clip__video { border-radius: 1.75rem; }
+.hiw__phone .clip__toggle {
+  left: 50%; bottom: auto; top: calc(100% + 0.75rem); transform: translateX(-50%);
+  color: var(--ink); background: var(--paper); border-color: var(--grid, #ddd);
+}
+.hiw__phone .clip__toggle:hover { background: var(--ink); color: #fff; }
