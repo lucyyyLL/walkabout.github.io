@@ -26,7 +26,8 @@ There is **no working demo yet**: the site uses GIFs/videos of the intended visi
 - Static HTML/CSS/JS, no build step, published with **GitHub Pages** from `main` / root (`.nojekyll` present).
 - Structure modeled on **waymo.com**: video-led hero, "real situations" clip strip, "where we're mapping"
   (Piloting now / Up next), voices, technology teaser, "why we're here" stats, mission, recurring CTA.
-- Pages built: `index.html` (Home), `navigate.html` (traveler experience: the demo film `assets/media/walkabout-demo.mp4`
+- Pages built: `index.html` only redirects to `navigate.html` (the old Home page was removed at the team's request;
+  the logo links to Navigate), `navigate.html` (traveler experience: the demo film `assets/media/walkabout-demo.mp4`
   (720p copy on phones) fills the first screen and plays once with Pause/Play/Replay and Skip buttons. Page scroll is
   locked while it plays (`html.is-locked`); Pause, Skip, the end, an error, a 3 s stall or a safety timer release it.
   A scroll cue shows when it ends; then the caption
@@ -69,7 +70,7 @@ There is **no working demo yet**: the site uses GIFs/videos of the intended visi
   `about.html`: same pinned slide-over transitions as Accessibility: opening statement → "Why we're here" (three
   sourced stats: CDC disability share, Census 65+, our survey's 59% asked a stranger) → "Who we are" (architects and
   urbanists at MIT and Harvard: hero-size headline and one line, nothing on the right). No team section (removed at the team's request).
-- Header and footer are duplicated in each HTML file: change all three when editing navigation.
+- Header and footer are duplicated in each HTML file: change all four pages when editing navigation.
   No Menu button: nav tabs sit top right (Waymo style) and become a scrollable row under the logo on phones.
 
 ## Design rules (keep consistent)
@@ -79,8 +80,6 @@ There is **no working demo yet**: the site uses GIFs/videos of the intended visi
 - Typeface: Futura PT (Adobe Fonts; kit link still to be added in each page `<head>`), with Jost from Google Fonts
   as the free stand-in.
   Slightly open letter spacing (`--track`). The header logo is the word "WalkAbout" only, no mark.
-- Home hero is an animated SVG section drawing of the route (street → step-free entrance → elevator to level 3 →
-  bridge → room). It draws once on load; respects `prefers-reduced-motion`.
 - Numbered markers only for real sequences (How it works, pipeline, roadmap).
 - Accessibility is non-negotiable: skip link, visible focus, semantic landmarks, alt text / aria-labels on media,
   captions on any narrated video, reduced-motion support, WCAG AA contrast.

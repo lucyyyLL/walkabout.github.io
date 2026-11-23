@@ -1,10 +1,10 @@
 # WalkAbout website (draft)
 
-A static three-page site: **Home** (`index.html`), **Navigate** (`navigate.html`) and **Technology** (`technology.html`).
+A static site: **Navigate** (`navigate.html`, where the site starts), **Technology**, **Accessibility** and **About**. `index.html` only redirects to Navigate.
 No build step and no dependencies: plain HTML, CSS and JavaScript, ready for GitHub Pages.
 
 ```
-index.html          Home: section-drawing hero, scenarios, pillars, where we're mapping, mission
+index.html          Redirects to navigate.html (the site starts on Navigate)
 navigate.html       Traveler experience: how it works, route profiles, availability check
 technology.html     The pipeline: plans → 3D → network → route → section → positioning
 assets/css/style.css  All styles. Colors and type scale are variables at the top.
