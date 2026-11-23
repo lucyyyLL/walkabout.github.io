@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About | WalkAbout</title>
+  <meta name="description" content="Why WalkAbout exists: architects and urbanists at MIT and Harvard making every building navigable for everyone.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Futura PT: add your Adobe Fonts kit here, e.g. <link rel="stylesheet" href="https://use.typekit.net/XXXXXXX.css">. Jost below is the free stand-in. -->
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css?v=20261123s">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ============================== HEADER ============================== -->
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html" aria-label="WalkAbout home">
+        WalkAbout
+      </a>
+      <nav class="nav" id="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="navigate.html">Navigate</a></li>
+          <li><a href="technology.html">Technology</a></li>
+          <li><a href="accessibility.html">Accessibility</a></li>
+          <li><a href="about.html" aria-current="page">About</a></li>
+        </ul>
+      </nav>
+      <button class="btn btn--small header-cta" data-open-check>Find your route</button>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <div class="pin-scope">
+    <!-- 1. OPENING: holds, then "Why we're here" slides over it (same transition as Accessibility) -->
+    <section class="hero pin-hold">
+      <div class="wrap">
+        <p class="eyebrow">About</p>
+        <h1>Every building, navigable for everyone.</h1>
+        <p class="lede">Finding the building isn't the same as reaching the room. A missing ramp, an unmarked entrance or a broken lift can end a trip, and the people most likely to meet them are the ones today's maps forget.</p>
+      </div>
+    </section>
+
+    <!-- 2. WHY WE'RE HERE -->
+    <section class="band cover-up cover-up--full pin-hold pin-hold--tall about-why" aria-labelledby="why-h">
+      <div class="wrap split">
+        <div>
+          <p class="eyebrow">Why we're here</p>
+          <h2 id="why-h">The shortest route isn't a usable one for millions of people</h2>
+          <p class="lede">Every one of them has somewhere to be: a class, an appointment, a gate. We want the way there to be as clear for them as it is for anyone.</p>
+        </div>
+        <ul class="about-stats">
+          <li><b>1 in 4</b><span>U.S. adults has a disability</span><small>CDC, 2022 data: 28.7% of adults</small></li>
+          <li><b>61 million</b><span>Americans are 65 or older, and the number is growing</span><small>U.S. Census Bureau, 2024</small></li>
+          <li><b>59%</b><span>of the people we surveyed had to stop and ask a stranger the way</span><small>WalkAbout questionnaire, 2026</small></li>
+        </ul>
+      </div>
+    </section>
+
+    <div class="pin-gap" aria-hidden="true"></div>
+
+    <!-- 3. WHO WE ARE -->
+    <section class="band band--white cover-up cover-up--full about-who" aria-labelledby="who-h">
+      <div class="wrap">
+        <div>
+          <p class="eyebrow">Who we are</p>
+          <h2 id="who-h" class="about-who__title">Architects and urbanists at MIT and Harvard</h2>
+          <p class="lede">We read floor plans and sections every day, so we started where those drawings could help most: the handoffs between street, building and floor that no map shows.</p>
+        </div>
+      </div>
+    </section>
+
+    </div><!-- /pin-scope -->
+  </main>
+
+  <!-- ============================== FOOTER ============================== -->
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div>
+          <a class="brand" href="index.html">WalkAbout</a>
+          <p class="hint"><span class="ph">[One-line description]</span></p>
+        </div>
+        <div>
+          <h3>Product</h3>
+          <ul>
+            <li><a href="navigate.html">Navigate</a></li>
+            <li><a href="technology.html">Technology</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Company</h3>
+          <ul>
+            <li><a href="about.html">About</a></li>
+            <li><a href="#">Press kit <span class="ph">[soon]</span></a></li>
+            <li><a href="#">Join the team <span class="ph">[soon]</span></a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Contact</h3>
+          <ul>
+            <li><a href="mailto:[team@email]"><span class="ph">[team@email]</span></a></li>
+            <li><a href="#">Accessibility statement <span class="ph">[soon]</span></a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="footer-note">Films and images on this site show concept visualizations of the planned experience. &copy; 2026 WalkAbout</p>
+    </div>
+  </footer>
+
+  <!-- ===================== "IS MY BUILDING MAPPED?" ===================== -->
+  <dialog id="check-dialog" aria-labelledby="check-dialog-h">
+    <button class="dialog__close" aria-label="Close">&times;</button>
+    <div class="dialog__body">
+      <h2 id="check-dialog-h" style="font-size:var(--t-lg)">Is my building mapped?</h2>
+      <form class="check-form" novalidate>
+        <label for="place-dialog">Campus or building</label>
+        <div class="form-row">
+          <input id="place-dialog" type="text" name="place" autocomplete="off" placeholder="e.g. MIT Building E52">
+          <button class="btn" type="submit">Check</button>
+        </div>
+      </form>
+      <div class="check-result form-msg" role="status"></div>
+    </div>
+  </dialog>
+
+  <script src="assets/js/main.js?v=20261123s"></script>
+</body>
+</html>

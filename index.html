@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WalkAbout</title>
+  <meta name="description" content="[Site description, about 150 characters: what WalkAbout is and who it's for.]">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Futura PT: add your Adobe Fonts kit here, e.g. <link rel="stylesheet" href="https://use.typekit.net/XXXXXXX.css">. Jost below is the free stand-in. -->
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css?v=20261123s">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ============================== HEADER ============================== -->
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html" aria-label="WalkAbout home">
+        WalkAbout
+      </a>
+      <nav class="nav" id="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="navigate.html">Navigate</a></li>
+          <li><a href="technology.html">Technology</a></li>
+          <li><a href="accessibility.html">Accessibility</a></li>
+          <li><a href="about.html">About</a></li>
+        </ul>
+      </nav>
+      <button class="btn btn--small header-cta" data-open-check>Find your route</button>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- 1. HERO: the route drawn in section, street to room -->
+    <section class="hero">
+      <div class="wrap">
+        <h1><span class="ph">[Tagline, 3 to 6 words. e.g. "Street to room. Every level."]</span></h1>
+        <p class="lede"><span class="ph">[One or two sentences: WalkAbout guides people from the street to the exact room, across buildings and levels, on a route that fits how they move.]</span></p>
+        <div class="btn-row">
+          <a class="btn" href="#film">Watch the film</a>
+          <button class="btn btn--ghost" data-open-check>Find your route</button>
+        </div>
+
+        <figure class="section-drawing" aria-labelledby="sd-caption">
+          <svg viewBox="0 0 1200 430" role="img" aria-labelledby="sd-title">
+            <title id="sd-title">Section drawing of a route: from the street, through a ground-floor entrance, up an elevator to level 3, across a bridge into the next building, to the destination room.</title>
+            <defs>
+              <pattern id="poche" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                <rect width="10" height="10" fill="#F0F0F0"/>
+                <line x1="0" y1="0" x2="0" y2="10" stroke="#C8C8C8" stroke-width="2"/>
+              </pattern>
+            </defs>
+
+            <!-- ground in section -->
+            <rect class="sd-ground" x="0" y="362" width="1200" height="60"/>
+            <line class="sd-groundline" x1="0" y1="361" x2="1200" y2="361"/>
+
+            <!-- Building A -->
+            <rect class="sd-core" x="462" y="82" width="52" height="278"/>
+            <rect class="sd-slab" x="200" y="290" width="360" height="6"/>
+            <rect class="sd-slab" x="200" y="220" width="360" height="6"/>
+            <rect class="sd-slab" x="200" y="150" width="360" height="6"/>
+            <rect class="sd-slab" x="192" y="76" width="376" height="8"/>
+            <rect class="sd-wall" x="192" y="76" width="8" height="234"/>   <!-- gap below = entrance -->
+            <rect class="sd-wall" x="560" y="76" width="8" height="144"/>
+            <rect class="sd-wall" x="560" y="262" width="8" height="100"/>
+
+            <!-- Bridge at level 3 -->
+            <rect class="sd-slab" x="568" y="220" width="152" height="6"/>
+            <rect class="sd-slab" x="568" y="170" width="152" height="5"/>
+
+            <!-- Building B -->
+            <rect class="sd-slab" x="720" y="290" width="360" height="6"/>
+            <rect class="sd-slab" x="720" y="220" width="360" height="6"/>
+            <rect class="sd-slab" x="720" y="150" width="360" height="6"/>
+            <rect class="sd-slab" x="712" y="76" width="376" height="8"/>
+            <rect class="sd-wall" x="712" y="76" width="8" height="94"/>
+            <rect class="sd-wall" x="712" y="226" width="8" height="136"/>
+            <rect class="sd-wall" x="1080" y="76" width="8" height="286"/>
+            <rect class="sd-wall" x="900" y="156" width="6" height="64"/>   <!-- room partition -->
+
+            <!-- level labels -->
+            <text class="sd-level" x="180" y="335" text-anchor="end">Level 1</text>
+            <text class="sd-level" x="180" y="265" text-anchor="end">Level 2</text>
+            <text class="sd-level" x="180" y="195" text-anchor="end">Level 3</text>
+            <text class="sd-level" x="180" y="125" text-anchor="end">Level 4</text>
+
+            <!-- the route -->
+            <path class="sd-walk sd-anim sd-anim--1" d="M30 348 H488"/>
+            <path class="sd-lift sd-anim sd-anim--2" d="M488 348 V208"/>
+            <path class="sd-walk sd-anim sd-anim--3" d="M488 208 H960"/>
+            <circle class="sd-dot" cx="30" cy="348" r="9"/>
+            <g class="sd-pop">
+              <circle class="sd-pin" cx="960" cy="208" r="13"/>
+            </g>
+
+            <!-- callouts -->
+            <text class="sd-label" x="24" y="330">Street</text>
+            <text class="sd-label" x="212" y="340">Step-free entrance</text>
+            <text class="sd-label" x="452" y="276" text-anchor="end">Elevator to level 3</text>
+            <text class="sd-label" x="584" y="200">Bridge</text>
+            <text class="sd-label" x="922" y="186">Room <tspan class="ph">[000]</tspan></text>
+          </svg>
+          <figcaption id="sd-caption">
+            <ol class="route-steps">
+              <li>Start on the street</li>
+              <li>Enter at the step-free door</li>
+              <li class="is-level">Take the elevator to level 3</li>
+              <li>Cross the bridge to Room <span class="ph">[000]</span></li>
+            </ol>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- 2. ONE BIG NEED STAT -->
+    <section class="band band--white" aria-labelledby="stat-h">
+      <div class="wrap stat">
+        <p class="stat__num" aria-hidden="true"><span class="ph">[70M+]</span></p>
+        <div>
+          <h2 id="stat-h"><span class="ph">[U.S. adults report a disability. For many of them, the shortest route isn't a usable one.]</span></h2>
+          <p class="stat__src"><span class="ph">[Source and year]</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. REAL SITUATIONS (Waymo's "real world scenarios" strip) -->
+    <section class="band" id="film" aria-labelledby="scen-h">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="scen-h">See how WalkAbout handles real situations</h2>
+          <p class="lede"><span class="ph">[One line framing these as concept films of the planned experience.]</span></p>
+        </div>
+        <div class="strip">
+          <article class="scenario">
+            <!-- Swap in: <video src="assets/media/scenario-elevator.mp4" autoplay muted loop playsinline aria-label="..."></video> -->
+            <figure class="media media--tall" data-ph="Concept clip: elevator out of service, route reroutes to the ramp. 4:5 MP4 loop"></figure>
+            <h3>Elevator out of service</h3>
+            <p><span class="ph">[What WalkAbout does, one sentence.]</span></p>
+          </article>
+          <article class="scenario">
+            <figure class="media media--tall" data-ph="Concept clip: stroller meets a staircase. 4:5 MP4 loop"></figure>
+            <h3>Stroller meets stairs</h3>
+            <p><span class="ph">[What WalkAbout does, one sentence.]</span></p>
+          </article>
+          <article class="scenario">
+            <figure class="media media--tall" data-ph="Concept clip: E52 to E51 over the 3rd-floor bridge. 4:5 MP4 loop"></figure>
+            <h3>The bridge on level 3</h3>
+            <p><span class="ph">[What WalkAbout does, one sentence.]</span></p>
+          </article>
+          <article class="scenario">
+            <figure class="media media--tall" data-ph="Concept clip: tunnel between buildings. 4:5 MP4 loop"></figure>
+            <h3>The tunnel nobody mentions</h3>
+            <p><span class="ph">[What WalkAbout does, one sentence.]</span></p>
+          </article>
+          <article class="scenario">
+            <figure class="media media--tall" data-ph="Concept clip: step-free route with luggage. 4:5 MP4 loop"></figure>
+            <h3>Step-free with luggage</h3>
+            <p><span class="ph">[What WalkAbout does, one sentence.]</span></p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4–5. MEET WALKABOUT + THREE PILLARS -->
+    <section class="band band--white" aria-labelledby="meet-h">
+      <div class="wrap">
+        <div class="split">
+          <div>
+            <h2 id="meet-h">Meet WalkAbout</h2>
+            <p class="lede"><span class="ph">[Two or three sentences: one continuous route from the street to the room, with clear guidance at every change of level.]</span></p>
+            <div class="btn-row">
+              <a class="btn" href="navigate.html">How navigating works</a>
+            </div>
+          </div>
+          <!-- Swap in: <video src="assets/media/meet.mp4" autoplay muted loop playsinline aria-label="..."></video> -->
+          <figure class="media" data-ph="Concept video: phone UI following a route across two buildings. 16:9 MP4 loop"></figure>
+        </div>
+
+        <div class="pillars">
+          <div class="pillar">
+            <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M4 32h12V18h20" fill="none" stroke="#1D4ED8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="4" cy="32" r="3" fill="#1D4ED8"/><circle cx="36" cy="18" r="4" fill="#1D4ED8"/></svg>
+            <h3>Street to room</h3>
+            <p><span class="ph">[One sentence: one set of directions from outside to the door, no app-switching at the entrance.]</span></p>
+          </div>
+          <div class="pillar">
+            <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M4 34h32M4 24h32M4 14h32" stroke="#0B0B0B" stroke-width="2.5"/><path d="M20 34V14" stroke="#F5B700" stroke-width="4" stroke-linecap="round"/></svg>
+            <h3>Section views</h3>
+            <p><span class="ph">[One sentence: see which elevator, ramp or stair to take, drawn the way architects see buildings.]</span></p>
+          </div>
+          <div class="pillar">
+            <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="13" cy="20" r="9" fill="none" stroke="#1D4ED8" stroke-width="3"/><circle cx="27" cy="20" r="9" fill="none" stroke="#0B0B0B" stroke-width="3"/></svg>
+            <h3>Routes for who you are</h3>
+            <p><span class="ph">[One sentence: step-free, stroller, fewest level changes. Profiles that combine.]</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6–7. WHERE WE'RE MAPPING -->
+    <section class="band" id="where" aria-labelledby="where-h">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="where-h">Where we're mapping</h2>
+          <p class="lede"><span class="ph">[One line on starting with university campuses, then hospitals.]</span></p>
+        </div>
+        <div class="places">
+          <div>
+            <h3><span class="status-dot" aria-hidden="true"></span>Piloting now</h3>
+            <ul>
+              <li><span class="ph">[MIT campus]</span><small><span class="ph">[Pilot scope, e.g. Sloan buildings E51, E52, E62]</span></small></li>
+            </ul>
+          </div>
+          <div>
+            <h3><span class="status-dot status-dot--next" aria-hidden="true"></span>Up next</h3>
+            <ul>
+              <li><span class="ph">[Venue type or named partner]</span><small><span class="ph">[Timing]</span></small></li>
+              <li><span class="ph">[Venue type or named partner]</span><small><span class="ph">[Timing]</span></small></li>
+            </ul>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn--ghost" data-open-check>Is my building mapped?</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. VOICES -->
+    <section class="band band--white" aria-labelledby="voices-h">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="voices-h">Why people want it</h2>
+        </div>
+        <div class="quotes">
+          <figure class="quote">
+            <blockquote><p><span class="ph">["Quote from an early tester or interviewee."]</span></p></blockquote>
+            <figcaption><span class="ph">[Name, role or context]</span></figcaption>
+          </figure>
+          <figure class="quote">
+            <blockquote><p><span class="ph">["Quote from an accessibility advocate."]</span></p></blockquote>
+            <figcaption><span class="ph">[Name, role or context]</span></figcaption>
+          </figure>
+          <figure class="quote">
+            <blockquote><p><span class="ph">["Quote from a campus or facilities lead."]</span></p></blockquote>
+            <figcaption><span class="ph">[Name, role or context]</span></figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. THE ENGINE (teaser for Technology) -->
+    <section class="band" aria-labelledby="engine-h">
+      <div class="wrap split split--rev">
+        <div>
+          <h2 id="engine-h">The engine behind every route</h2>
+          <p class="lede"><span class="ph">[Two sentences: we read the drawings buildings already have and turn them into a 3D network that knows every ramp, elevator and stair.]</span></p>
+          <div class="btn-row">
+            <a class="btn" href="technology.html">See the technology</a>
+          </div>
+        </div>
+        <!-- Swap in: <video src="assets/media/plan-to-3d.mp4" ...></video> -->
+        <figure class="media" data-ph="Concept animation: floor plan lifts into a 3D model, then a route appears in section. 16:9 MP4 loop"></figure>
+      </div>
+    </section>
+
+    <!-- 11. WHY WE'RE HERE (accessibility pillar) -->
+    <section class="band band--ink" id="why" aria-labelledby="why-h">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="why-h">Why we're here</h2>
+          <p class="lede"><span class="ph">[Two sentences: finding a building isn't the same as reaching the room. A missing ramp or a broken elevator can stop a trip entirely.]</span></p>
+        </div>
+        <div class="features">
+          <div class="feature">
+            <h3><span class="ph">[61.2M]</span></h3>
+            <p><span class="ph">[Americans aged 65 or older. Source.]</span></p>
+          </div>
+          <div class="feature is-level">
+            <h3><span class="ph">[Stat]</span></h3>
+            <p><span class="ph">[e.g. share of first-time hospital visitors who get lost. Source.]</span></p>
+          </div>
+          <div class="feature">
+            <h3><span class="ph">[Stat]</span></h3>
+            <p><span class="ph">[e.g. new students and visitors per campus per year. Source.]</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12–13. MISSION -->
+    <section class="band" id="mission" aria-labelledby="mission-h">
+      <div class="wrap">
+        <h2 id="mission-h"><span class="ph">[Mission line, e.g. "Make every building navigable for everyone."]</span></h2>
+        <p class="lede"><span class="ph">[Who we are in two sentences: architects and urbanists at MIT and Harvard building navigation for people moving through space.]</span></p>
+      </div>
+    </section>
+
+    <!-- 15. FINAL CTA -->
+    <section class="band band--white final" aria-labelledby="final-h">
+      <div class="wrap">
+        <h2 id="final-h">Be first to walk it</h2>
+        <p class="lede"><span class="ph">[One line: join the waitlist as a traveler, or pilot WalkAbout at your campus.]</span></p>
+        <div class="btn-row">
+          <button class="btn" data-open-check>Join the waitlist</button>
+          <a class="btn btn--ghost" href="mailto:[team@email]">Pilot with us</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================== FOOTER ============================== -->
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div>
+          <a class="brand" href="index.html">WalkAbout</a>
+          <p class="hint"><span class="ph">[One-line description]</span></p>
+        </div>
+        <div>
+          <h3>Product</h3>
+          <ul>
+            <li><a href="navigate.html">Navigate</a></li>
+            <li><a href="technology.html">Technology</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Company</h3>
+          <ul>
+            <li><a href="about.html">About</a></li>
+            <li><a href="#">Press kit <span class="ph">[soon]</span></a></li>
+            <li><a href="#">Join the team <span class="ph">[soon]</span></a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Contact</h3>
+          <ul>
+            <li><a href="mailto:[team@email]"><span class="ph">[team@email]</span></a></li>
+            <li><a href="#">Accessibility statement <span class="ph">[soon]</span></a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="footer-note">Films and images on this site show concept visualizations of the planned experience. &copy; 2026 WalkAbout</p>
+    </div>
+  </footer>
+
+  <!-- ===================== "IS MY BUILDING MAPPED?" ===================== -->
+  <dialog id="check-dialog" aria-labelledby="check-dialog-h">
+    <button class="dialog__close" aria-label="Close">&times;</button>
+    <div class="dialog__body">
+      <h2 id="check-dialog-h" style="font-size:var(--t-lg)">Is my building mapped?</h2>
+      <form class="check-form" novalidate>
+        <label for="place-dialog">Campus or building</label>
+        <div class="form-row">
+          <input id="place-dialog" type="text" name="place" autocomplete="off" placeholder="e.g. MIT Building E52">
+          <button class="btn" type="submit">Check</button>
+        </div>
+      </form>
+      <div class="check-result form-msg" role="status"></div>
+    </div>
+  </dialog>
+
+  <script src="assets/js/main.js?v=20261123s"></script>
+</body>
+</html>

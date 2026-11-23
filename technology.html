@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Technology | WalkAbout</title>
+  <meta name="description" content="How WalkAbout turns the floor plans a building already has into an accessible route map and a 3D model.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Futura PT: add your Adobe Fonts kit here, e.g. <link rel="stylesheet" href="https://use.typekit.net/XXXXXXX.css">. Jost below is the free stand-in. -->
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css?v=20261123s">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ============================== HEADER ============================== -->
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html" aria-label="WalkAbout home">
+        WalkAbout
+      </a>
+      <nav class="nav" id="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="navigate.html">Navigate</a></li>
+          <li><a href="technology.html" aria-current="page">Technology</a></li>
+          <li><a href="accessibility.html">Accessibility</a></li>
+          <li><a href="about.html">About</a></li>
+        </ul>
+      </nav>
+      <button class="btn btn--small header-cta" data-open-check>Find your route</button>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- HERO: holds in place; the tabs and "How a building becomes navigable" slide up over it -->
+    <section class="hero tech-stage">
+      <div class="tech-stage__inner">
+      <div class="wrap tech-stage__grid">
+        <div>
+        <h1>From floor plans to routes, automatically.</h1>
+        <p class="lede">Buildings already have drawings. WalkAbout reads them and turns every corridor, door, ramp, stair and elevator into a map you can route on and a 3D model you can see.</p>
+        </div>
+        <!-- A small route that turns 3D: the plan tilts into an axonometric view as the walls rise
+             (24 stacked wall layers), then a dot pulses and the blue route draws through the building, holds,
+             fades, and the plan settles back. Decorative. Reduced motion: a still plan with the finished route. -->
+        <figure class="navani" aria-hidden="true">
+          <div class="navani__scene">
+            <svg class="navani__floor" viewBox="0 0 400 300">
+              <rect class="navani__slab" x="30" y="30" width="340" height="240"/>
+              <path class="navani__route" pathLength="1" d="M70 230 H140 V135 H255 V70 H330">
+                <animate attributeName="stroke-dashoffset" values="1;1;0;0" keyTimes="0;0.3;0.62;1" dur="9s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.84;0.9;1" dur="9s" repeatCount="indefinite"/>
+              </path>
+              <circle class="navani__ring" cx="70" cy="230" r="8">
+                <animate attributeName="r" values="8;8;22;22" keyTimes="0;0.28;0.4;1" dur="9s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0;0.45;0;0" keyTimes="0;0.28;0.4;1" dur="9s" repeatCount="indefinite"/>
+              </circle>
+              <circle class="navani__start" cx="70" cy="230" r="7"/>
+              <circle class="navani__pin" cx="330" cy="70" r="11">
+                <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.6;0.65;0.84;0.9;1" dur="9s" repeatCount="indefinite"/>
+              </circle>
+              <circle class="navani__me" r="8">
+                <animateMotion path="M70 230 H140 V135 H255 V70 H330" keyPoints="0;0;1;1" keyTimes="0;0.3;0.62;1" calcMode="linear" dur="9s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.28;0.31;0.84;0.9;1" dur="9s" repeatCount="indefinite"/>
+              </circle>
+            </svg>
+            <svg class="navani__walls" style="--i:1" viewBox="0 0 400 300"><rect x="30" y="30" width="340" height="240"/><path d="M30 160 H120 M160 160 H240 M280 160 H370 M200 30 V110 M200 160 V270 M290 30 V52 M290 88 V110"/></svg>
+            <svg class="navani__walls" style="--i:2" viewBox="0 0 400 300"><rect x="30" y="30" width="340" height="240"/><path d="M30 160 H120 M160 160 H240 M280 160 H370 M200 30 V110 M200 160 V270 M290 30 V52 M290 88 V110"/></svg>
+            <svg class="navani__walls" style="--i:3" viewBox="0 0 400 300"><rect x="30" y="30" width="340" height="240"/><path d="M30 160 H120 M160 160 H240 M280 160 H370 M200 30 V110 M200 160 V270 M290 30 V52 M290 88 V110"/></svg>
+            <svg class="navani__walls" style="--i:4" viewBox="0 0 400 300"><rect x="30" y="30" width="340" height="240"/><path d="M30 160 H120 M160 160 H240 M280 160 H370 M200 30 V110 M200 160 V270 M290 30 V52 M290 88 V110"/></svg>
+            <svg class="navani__walls" style="--i:5" viewBox="0 0 400 300"><rect x="30" y="30" width="340" height="240"/><path d="M30 160 H120 M160 160 H240 M280 160 H370 M200 30 V110 M200 160 V270 M290 30 V52 M290 88 V110"/></svg>
+            <svg class="navani__walls" style="--i:6" viewBox="0 0 400 300"><rect x="30" y="30" width="340" height="240"/><path d="M30 160 H120 M160 160 H240 M280 160 H370 M200 30 V110 M200 160 V270 M290 30 V52 M290 88 V110"/></svg>
+            <svg class="navani__walls" style="--i:7" viewBox="0 0 400 300"><rect x="30" y="30" width="340" height="240"/><path d="M30 160 H120 M160 160 H240 M280 160 H370 M200 30 V110 M200 160 V270 M290 30 V52 M290 88 V110"/></svg>
+            <svg class="navani__walls" style="--i:8" viewBox="0 0 400 300"><rect x="30" y="30" width="340" height="240"/><path d="M30 160 H120 M160 160 H240 M280 160 H370 M200 30 V110 M200 160 V270 M290 30 V52 M290 88 V110"/></svg>
+            <svg class="navani__walls" style="--i:9" viewBox="0 0 400 300"><rect x="30" y="30" width="340" height="240"/><path d="M30 160 H120 M160 160 H240 M280 160 H370 M200 30 V110 M200 160 V270 M290 30 V52 M290 88 V110"/></svg>
+            <svg class="navani__walls" style="--i:10" viewBox="0 0 400 300"><rect x="30" y="30" width="340" height="240"/><path d="M30 160 H120 M160 160 H240 M280 160 H370 M200 30 V110 M200 160 V270 M290 30 V52 M290 88 V110"/></svg>
+            <svg class="navani__walls" style="--i:11" viewBox="0 0 400 300"><rect x="30" y="30" width="340" height="240"/><path d="M30 160 H120 M160 160 H240 M280 160 H370 M200 30 V110 M200 160 V270 M290 30 V52 M290 88 V110"/></svg>
+            <svg class="navani__walls" style="--i:12" viewBox="0 0 400 300"><rect x="30" y="30" width="340" height="240"/><path d="M30 160 H120 M160 160 H240 M280 160 H370 M200 30 V110 M200 160 V270 M290 30 V52 M290 88 V110"/></svg>
+            <svg class="navani__walls" style="--i:13" viewBox="0 0 400 300"><rect x="30" y="30" width="340" height="240"/><path d="M30 160 H120 M160 160 H240 M280 160 H370 M200 30 V110 M200 160 V270 M290 30 V52 M290 88 V110"/></svg>
+            <svg class="navani__walls" style="--i:14" viewBox="0 0 400 300"><rect x="30" y="30" width="340" height="240"/><path d="M30 160 H120 M160 160 H240 M280 160 H370 M200 30 V110 M200 160 V270 M290 30 V52 M290 88 V110"/></svg>
+            <svg class="navani__walls" style="--i:15" viewBox="0 0 400 300"><rect x="30" y="30" width="340" height="240"/><path d="M30 160 H120 M160 160 H240 M280 160 H370 M200 30 V110 M200 160 V270 M290 30 V52 M290 88 V110"/></svg>
+            <svg class="navani__walls" style="--i:16" viewBox="0 0 400 300"><rect x="30" y="30" width="340" height="240"/><path d="M30 160 H120 M160 160 H240 M280 160 H370 M200 30 V110 M200 160 V270 M290 30 V52 M290 88 V110"/></svg>
+            <svg class="navani__walls" style="--i:17" viewBox="0 0 400 300"><rect x="30" y="30" width="340" height="240"/><path d="M30 160 H120 M160 160 H240 M280 160 H370 M200 30 V110 M200 160 V270 M290 30 V52 M290 88 V110"/></svg>
+            <svg class="navani__walls" style="--i:18" viewBox="0 0 400 300"><rect x="30" y="30" width="340" height="240"/><path d="M30 160 H120 M160 160 H240 M280 160 H370 M200 30 V110 M200 160 V270 M290 30 V52 M290 88 V110"/></svg>
+            <svg class="navani__walls" style="--i:19" viewBox="0 0 400 300"><rect x="30" y="30" width="340" height="240"/><path d="M30 160 H120 M160 160 H240 M280 160 H370 M200 30 V110 M200 160 V270 M290 30 V52 M290 88 V110"/></svg>
+            <svg class="navani__walls" style="--i:20" viewBox="0 0 400 300"><rect x="30" y="30" width="340" height="240"/><path d="M30 160 H120 M160 160 H240 M280 160 H370 M200 30 V110 M200 160 V270 M290 30 V52 M290 88 V110"/></svg>
+            <svg class="navani__walls" style="--i:21" viewBox="0 0 400 300"><rect x="30" y="30" width="340" height="240"/><path d="M30 160 H120 M160 160 H240 M280 160 H370 M200 30 V110 M200 160 V270 M290 30 V52 M290 88 V110"/></svg>
+            <svg class="navani__walls" style="--i:22" viewBox="0 0 400 300"><rect x="30" y="30" width="340" height="240"/><path d="M30 160 H120 M160 160 H240 M280 160 H370 M200 30 V110 M200 160 V270 M290 30 V52 M290 88 V110"/></svg>
+            <svg class="navani__walls" style="--i:23" viewBox="0 0 400 300"><rect x="30" y="30" width="340" height="240"/><path d="M30 160 H120 M160 160 H240 M280 160 H370 M200 30 V110 M200 160 V270 M290 30 V52 M290 88 V110"/></svg>
+            <svg class="navani__walls navani__walls--top" style="--i:24" viewBox="0 0 400 300"><rect x="30" y="30" width="340" height="240"/><path d="M30 160 H120 M160 160 H240 M280 160 H370 M200 30 V110 M200 160 V270 M290 30 V52 M290 88 V110"/></svg>
+          </div>
+        </figure>
+      </div>
+      </div>
+    </section>
+
+    <!-- TABS: technology pipeline | how it works -->
+    <nav class="tabs" aria-label="Technology sections">
+      <div class="wrap" role="tablist">
+        <a role="tab" id="tab-pipeline" href="#pipeline" aria-controls="pipeline" aria-selected="true">The technology</a>
+        <a role="tab" id="tab-how" href="#how-it-works" aria-controls="how-it-works" aria-selected="false">How it works</a>
+      </div>
+    </nav>
+
+    <div role="tabpanel" id="pipeline" aria-labelledby="tab-pipeline" tabindex="0">
+    <!-- PIPELINE: a real sequence, so numbered -->
+    <section class="band band--white" aria-labelledby="pipe-h">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="pipe-h">How a building becomes navigable</h2>
+          <p class="lede">Six stages, automated where they can be and checked by people where it matters. One run per building turns plans into a published map.</p>
+        </div>
+        <!-- One drawing that evolves as you scroll: plan -> rooms -> network -> routes -> section -> you.
+             data-draw="k" draws a line during step k, data-in="k" fades in, data-out="k" fades out,
+             data-dim="k" dims. Without motion (phones, reduced motion) it shows a still at step 4. -->
+        <div class="scrolly" id="pipeline-story">
+          <div class="scrolly__stage">
+            <div class="scrolly__text">
+              <ol class="scrolly__steps">
+                <li id="extract">
+                  <span class="step__num" aria-hidden="true"></span>
+                  <h3>Read the plans</h3>
+                  <p>We start from the drawings venues already have: DWG files first, PDFs next. Each floor is scaled to metres and lined up with the floors above and below. Walls, doors, stairs, elevators, ramps and room labels are sorted using the drawing's own layers and labels, with anything unclear flagged for a person to check.</p>
+                </li>
+                <li id="spaces">
+                  <span class="step__num" aria-hidden="true"></span>
+                  <h3>Find every room</h3>
+                  <p>Walls become solid boundaries and every doorway gets a threshold, so each room and corridor becomes its own shape with its own name. Spaces without a label, usually corridors and lobbies, are flagged for review.</p>
+                </li>
+                <li id="network">
+                  <span class="step__num" aria-hidden="true"></span>
+                  <h3>Connect the network</h3>
+                  <p>Rooms link through their doors, and corridors along their centrelines. Elevators, stairs and ramps link one floor to the next. Each building is placed on the campus map, so bridges, tunnels and entrances join it to its neighbours and the sidewalks outside.</p>
+                </li>
+                <li id="route">
+                  <span class="step__num" aria-hidden="true"></span>
+                  <h3>Weigh every route</h3>
+                  <p>Every link carries what matters for access: width, slope, steps, door type and whether it's open. Your profile changes the weights. Step-free drops any step or slope steeper than 1:12, and fewest level changes avoids floor changes. An elevator outage simply switches its links off.</p>
+                </li>
+                <li id="model">
+                  <span class="step__num" aria-hidden="true"></span>
+                  <h3>Build the model and the section</h3>
+                  <p>Automatic checks catch missed doors and dead ends, and our architects review the result. The same run builds a light 3D model that shares coordinates with the map. Your route is drawn through it, and a section is cut along it to show each level change.</p>
+                </li>
+                <li id="position">
+                  <span class="step__num" aria-hidden="true"></span>
+                  <h3>Find you inside</h3>
+                  <p>Your phone's barometer and motion sensors are matched to the known floor heights and the map to place you on the right floor. Simple markers at entrances and elevators give a fixed point to correct any drift, with no beacons to install.</p>
+                </li>
+              </ol>
+              <div class="scrolly__ticks" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+            </div>
+
+            <figure class="scrolly__art">
+              <svg viewBox="0 0 600 440" role="img" aria-labelledby="story-title">
+                <title id="story-title">Diagram: a floor plan is traced, its rooms are filled and named, a network links them through doors, a step-free route to the elevator is chosen, then a section shows the route rising to level 3 and a blue dot following it.</title>
+
+                <!-- ============ PLAN (level 1) ============ -->
+                <g class="sv-plan" data-out="5">
+                  <!-- 2. room fills + labels -->
+                  <g data-in="2" data-fade="3">
+                    <rect class="sv-fill" x="40" y="40" width="180" height="130"/>
+                    <rect class="sv-fill" x="220" y="40" width="180" height="130"/>
+                    <rect class="sv-fill" x="40" y="210" width="220" height="130"/>
+                    <rect class="sv-fill" x="260" y="210" width="180" height="130"/>
+                    <rect class="sv-fill" x="440" y="210" width="120" height="130"/>
+                    <rect class="sv-fill sv-fill--core" x="400" y="40" width="160" height="130"/>
+                    <rect class="sv-fill sv-fill--corr" x="40" y="170" width="520" height="40"/>
+                    <text class="sv-label" x="58" y="64">Office 310</text>
+                    <text class="sv-label" x="238" y="64">Office 320</text>
+                    <text class="sv-label" x="410" y="64">Stair</text>
+                    <text class="sv-label" x="492" y="64">Elevator</text>
+                    <text class="sv-label" x="58" y="234">Lobby</text>
+                    <text class="sv-label" x="278" y="326">Seminar 130</text>
+                    <text class="sv-label" x="458" y="234">WC</text>
+                    <text class="sv-label sv-label--muted" x="58" y="207">Corridor</text>
+                  </g>
+
+                  <!-- 1. linework -->
+                  <path class="sv-wall" data-draw="1" data-fade="3" d="M140 340 H40 V40 H560 V340 H170"/>
+                  <path class="sv-wall sv-wall--in" data-draw="1" data-fade="3" d="M40 170 H80 M110 170 H260 M290 170 H430 M460 170 H500 M530 170 H560 M220 40 V170 M400 40 V170 M480 40 V170"/>
+                  <path class="sv-wall sv-wall--in" data-draw="1" data-fade="3" d="M40 210 H180 M210 210 H320 M350 210 H480 M510 210 H560 M260 210 V340 M440 210 V340"/>
+                  <path class="sv-thin" data-draw="1" data-fade="3" d="M80 170 V140 A30 30 0 0 1 110 170 M260 170 V140 A30 30 0 0 1 290 170 M180 210 V240 A30 30 0 0 0 210 210 M320 210 V240 A30 30 0 0 0 350 210"/>
+                  <path class="sv-thin" data-draw="1" data-fade="3" d="M412 84 H468 M412 96 H468 M412 108 H468 M412 120 H468 M412 132 H468 M412 144 H468 M412 156 H468"/>
+                  <path class="sv-thin" data-draw="1" data-fade="3" d="M492 76 H548 V160 H492 Z M492 76 L548 160 M548 76 L492 160"/>
+                  <text class="sv-label sv-label--muted" x="178" y="362" data-in="1" data-fade="3">Entrance</text>
+
+                  <!-- 3. network -->
+                  <g data-dim="4">
+                    <path class="sv-edge" data-draw="3" d="M60 190 H545"/>
+                    <path class="sv-edge" data-draw="3" d="M130 105 L95 170 V190 M310 105 L275 170 V190 M440 105 L445 170 V190 M520 118 L515 170 V190 M150 275 L195 210 V190 M350 275 L335 210 V190 M500 275 L495 210 V190 M155 392 L150 275"/>
+                    <g class="sv-nodes" data-in="3">
+                      <circle r="5" cx="130" cy="105"/><circle r="5" cx="310" cy="105"/><circle r="5" cx="440" cy="105"/><circle r="5" cx="520" cy="118"/>
+                      <circle r="5" cx="150" cy="275"/><circle r="5" cx="350" cy="275"/><circle r="5" cx="500" cy="275"/><circle r="5" cx="155" cy="392"/>
+                      <circle r="3" cx="95" cy="190"/><circle r="3" cx="275" cy="190"/><circle r="3" cx="445" cy="190"/><circle r="3" cx="515" cy="190"/>
+                      <circle r="3" cx="195" cy="190"/><circle r="3" cx="335" cy="190"/><circle r="3" cx="495" cy="190"/>
+                    </g>
+                    <text class="sv-label sv-label--muted" x="416" y="30" data-in="3">to levels 2, 3</text>
+                  </g>
+
+                  <!-- 4. routes -->
+                  <path class="sv-alt" data-in="4" d="M155 392 L150 275 L195 210 V190 H445 V170 L440 105"/>
+                  <path class="sv-alt" d="M300 388 H330" data-in="4"/>
+                  <text class="sv-label sv-label--muted" x="340" y="392" data-in="4">Fastest: 2 flights of stairs</text>
+                  <path class="sv-route" data-draw="4" d="M155 392 L150 275 L195 210 V190 H515 V170 L520 118"/>
+                  <path class="sv-route" d="M300 366 H330" style="stroke-width:5" data-in="4"/>
+                  <text class="sv-label sv-label--route" x="340" y="370" data-in="4">Step-free: elevator</text>
+                  <circle class="sv-start" cx="155" cy="392" r="7" data-in="4"/>
+                </g>
+
+                <!-- ============ SECTION ============ -->
+                <g class="sv-section" data-in="5">
+                  <path class="sv-ground" d="M0 372 H600"/>
+                  <rect class="sv-core" x="376" y="62" width="48" height="298"/>
+                  <rect class="sv-slab" x="100" y="356" width="440" height="6"/>
+                  <rect class="sv-slab" x="100" y="256" width="440" height="6"/>
+                  <rect class="sv-slab" x="100" y="156" width="440" height="6"/>
+                  <rect class="sv-slab" x="94" y="56" width="452" height="8"/>
+                  <rect class="sv-slab" x="94" y="56" width="6" height="250"/>
+                  <rect class="sv-slab" x="540" y="56" width="6" height="306"/>
+                  <rect class="sv-slab" x="452" y="100" width="4" height="56"/>
+                  <text class="sv-label sv-label--muted" x="88" y="334" text-anchor="end">Level 1</text>
+                  <text class="sv-label sv-label--muted" x="88" y="234" text-anchor="end">Level 2</text>
+                  <text class="sv-label sv-label--muted" x="88" y="134" text-anchor="end">Level 3</text>
+                  <text class="sv-label sv-label--muted" x="400" y="52" text-anchor="middle">Elevator</text>
+                  <text class="sv-label" x="20" y="394">Street</text>
+                  <path class="sv-route" id="story-route" data-draw="5" d="M20 344 H400 V144 H505"/>
+                  <circle class="sv-pin" cx="505" cy="144" r="9" data-in="5"/>
+                  <text class="sv-label sv-label--route" x="505" y="122" text-anchor="middle">Room 325</text>
+                </g>
+
+                <!-- ============ YOU ============ -->
+                <g class="sv-you" data-in="6">
+                  <circle class="sv-dot-ring" r="16" cx="20" cy="344"/>
+                  <circle class="sv-dot" r="8" cx="20" cy="344"/>
+                  <text class="sv-readout" x="300" y="420" text-anchor="middle">You are on Level 1</text>
+                </g>
+              </svg>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Under the hood → Roadmap → Bring WalkAbout to your campus: each holds, the next slides over -->
+    <div class="pin-scope">
+    <!-- UNDER THE HOOD -->
+    <section class="band band--ink pin-hold pin-hold--tall" aria-labelledby="specs-h">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="specs-h">Under the hood</h2>
+          <p class="lede">For technical readers: what runs where, and what comes out.</p>
+        </div>
+        <dl class="specs">
+          <div><dt>Inputs</dt><dd>DWG first, vector PDF next. One file per floor, in metres, floors aligned.</dd></div>
+          <div><dt>Recognition</dt><dd>Layer, block and label rules for each building, with geometric fallbacks such as door swings and stair treads.</dd></div>
+          <div><dt>Pipeline</dt><dd>Python, run as one cloud job per upload. Rhino is used for review and fixes, not production.</dd></div>
+          <div><dt>Outputs</dt><dd>A routing graph (GeoJSON) and a 3D model (glTF) that share coordinates and IDs.</dd></div>
+          <div><dt>Routing</dt><dd>Weighted shortest paths. Profiles filter or re-weight links when you ask for a route.</dd></div>
+          <div><dt>Positioning</dt><dd>Barometer, motion sensors and step tracking matched to the map, with markers for a fixed point.</dd></div>
+          <div><dt>Updates</dt><dd>Status changes switch links off. Manual fixes are kept separately and survive every rerun.</dd></div>
+          <div><dt>Next</dt><dd>Campus-scale views with outdoor context, then AR directions anchored to the same building map.</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <div class="pin-gap" aria-hidden="true"></div>
+
+    <!-- ROADMAP: a route zigzags across the page; scrolling moves the blue dot from milestone to milestone.
+         main.js drives it (--p); phones and reduced motion show the whole route and every milestone. -->
+    <section class="band band--white cover-up roadmap" aria-labelledby="road-h">
+      <div class="roadmap__sticky">
+        <div class="wrap">
+          <div class="section-head">
+            <p class="eyebrow">Roadmap</p>
+            <h2 id="road-h">Where we're headed</h2>
+          </div>
+        </div>
+        <!-- A route that winds up across the whole page; the dot follows it as you scroll -->
+        <div class="roadmap__map">
+          <svg viewBox="0 0 1600 640" aria-hidden="true">
+            <path class="roadmap__base" d="M20 600 C140 420 240 330 360 330 C500 330 580 470 720 470 C880 470 960 190 1080 190 C1180 190 1230 260 1320 260 C1430 260 1500 120 1580 50"/>
+            <path class="roadmap__done" d="M20 600 C140 420 240 330 360 330 C500 330 580 470 720 470 C880 470 960 190 1080 190 C1180 190 1230 260 1320 260 C1430 260 1500 120 1580 50"/>
+            <circle class="roadmap__stop" cx="360" cy="330" r="10"/>
+            <circle class="roadmap__stop" cx="720" cy="470" r="10"/>
+            <circle class="roadmap__stop" cx="1080" cy="190" r="10"/>
+            <circle class="roadmap__stop" cx="1320" cy="260" r="10"/>
+            <circle class="roadmap__ring" cx="20" cy="600" r="22"/>
+            <circle class="roadmap__dot" cx="20" cy="600" r="12"/>
+          </svg>
+          <ol class="roadmap__labels">
+            <li class="is-above" style="--x:22.5%; --y:51.6%"><em class="roadmap__when">Now</em><strong>Pilot on one campus</strong><span>Map buildings on the MIT campus and test routes with students, staff and visitors.</span></li>
+            <li class="is-below" style="--x:45%; --y:73.4%"><em class="roadmap__when">Then</em><strong>Build it with the community</strong><span>Shape routes with disability groups, caregivers, older adults and facilities teams.</span></li>
+            <li class="is-above" style="--x:67.5%; --y:29.7%"><em class="roadmap__when">Next</em><strong>Grow to more campuses and hospitals</strong><span>Bring more venues on board and link their buildings to the streets and transit around them.</span></li>
+            <li class="is-below" style="--x:82.5%; --y:40.6%"><em class="roadmap__when">Later</em><strong>Wherever people need to arrive</strong><span>Stations, airports and city districts, on one shared map of accessible routes.</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINAL CTA: slides up over the finished roadmap -->
+    <section class="band final cover-up cover-up--full" aria-labelledby="final-h">
+      <div class="wrap">
+        <h2 id="final-h">Bring WalkAbout to your campus</h2>
+        <p class="lede">We're mapping MIT first. If you run a campus or hospital and have floor plans, we'd like to map it next.</p>
+        <div class="btn-row">
+          <a class="btn" href="mailto:[team@email]">Pilot with us</a>
+          <a class="btn btn--ghost" href="navigate.html">See the traveler experience</a>
+        </div>
+      </div>
+    </section>
+    </div><!-- /pin-scope -->
+    </div>
+
+    <div role="tabpanel" id="how-it-works" aria-labelledby="tab-how" tabindex="0">
+    <!-- HOW IT WORKS (moved from Navigate): a true sequence, so it's numbered -->
+    <section class="band" aria-labelledby="how-h">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="how-h">From search to the door in four steps</h2>
+          <p class="lede">What you do as a traveler. The map behind it is built in "The technology".</p>
+        </div>
+        <ol class="steps steps--stack">
+          <li>
+            <div>
+              <span class="step__num" aria-hidden="true"></span>
+              <h3>Choose where you're going</h3>
+              <p>Search for a room, an office or a service, not just a building. "Room 325" is a destination, not a guess.</p>
+            </div>
+            <figure class="media clip">
+              <video class="clip__video" muted playsinline preload="metadata" data-start="0.2" data-end="4.6"
+                     poster="assets/media/walkabout-demo.jpg" aria-label="Concept clip: the app asks Where to? and a route is planned to E51, Room 345.">
+                <source src="assets/media/walkabout-demo-720p.mp4" type="video/mp4">
+              </video>
+              <button class="clip__toggle" type="button">Pause</button>
+            </figure>
+          </li>
+          <li>
+            <div>
+              <span class="step__num" aria-hidden="true"></span>
+              <h3>Tell us how you're moving</h3>
+              <p>Pick one or more profiles. WalkAbout plans around all of them at once.</p>
+              <ul class="chips" aria-label="Route profiles (demo)">
+                <li><button class="chip" aria-pressed="false">Step-free</button></li>
+                <li><button class="chip" aria-pressed="false">Stroller-friendly</button></li>
+                <li><button class="chip" aria-pressed="false">Fewest level changes</button></li>
+                <li><button class="chip" aria-pressed="false">Cart or luggage</button></li>
+                <li><button class="chip" aria-pressed="false">Fastest</button></li>
+              </ul>
+              <p class="chip-note" aria-live="polite">Pick one or more. Profiles combine.</p>
+            </div>
+            <figure class="media clip">
+              <video class="clip__video" muted playsinline preload="metadata" data-start="7.9" data-end="12.6"
+                     poster="assets/media/walkabout-demo.jpg" aria-label="Concept clip: choosing the stroller profile redraws the route through the ramp entrance and the elevator.">
+                <source src="assets/media/walkabout-demo-720p.mp4" type="video/mp4">
+              </video>
+              <button class="clip__toggle" type="button">Pause</button>
+            </figure>
+          </li>
+          <li>
+            <div>
+              <span class="step__num" aria-hidden="true"></span>
+              <h3>Follow one route from the street</h3>
+              <p>Directions take you to the right entrance, then carry on inside, with landmark photos at each decision point. No switching apps at the door.</p>
+            </div>
+            <figure class="media clip">
+              <video class="clip__video" muted playsinline preload="metadata" data-start="4.7" data-end="7.9"
+                     poster="assets/media/walkabout-demo.jpg" aria-label="Concept clip: one route drawn from the street, through the entrance and over the third-floor bridge to the room.">
+                <source src="assets/media/walkabout-demo-720p.mp4" type="video/mp4">
+              </video>
+              <button class="clip__toggle" type="button">Pause</button>
+            </figure>
+          </li>
+          <li>
+            <div>
+              <span class="step__num is-level" aria-hidden="true"></span>
+              <h3>Change levels with a section view</h3>
+              <p>At every stair, ramp or elevator, a section drawing shows exactly which one to take and where it lets you out.</p>
+            </div>
+            <figure class="media clip">
+              <video class="clip__video" muted playsinline preload="metadata" data-start="12.8" data-end="16.2"
+                     poster="assets/media/walkabout-demo.jpg" aria-label="Concept clip: AR guidance on a phone, with a section view showing the elevator to level 3.">
+                <source src="assets/media/walkabout-demo-720p.mp4" type="video/mp4">
+              </video>
+              <button class="clip__toggle" type="button">Pause</button>
+            </figure>
+          </li>
+        </ol>
+      </div>
+    </section>
+    <!-- FINAL CTA -->
+    <section class="band final" aria-labelledby="final-h2">
+      <div class="wrap">
+        <h2 id="final-h2">Bring WalkAbout to your campus</h2>
+        <p class="lede">We're mapping MIT first. If you run a campus or hospital and have floor plans, we'd like to map it next.</p>
+        <div class="btn-row">
+          <a class="btn" href="mailto:[team@email]">Pilot with us</a>
+          <a class="btn btn--ghost" href="navigate.html">See the traveler experience</a>
+        </div>
+      </div>
+    </section>
+    </div>
+
+  </main>
+
+  <!-- ============================== FOOTER ============================== -->
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div>
+          <a class="brand" href="index.html">WalkAbout</a>
+          <p class="hint"><span class="ph">[One-line description]</span></p>
+        </div>
+        <div>
+          <h3>Product</h3>
+          <ul>
+            <li><a href="navigate.html">Navigate</a></li>
+            <li><a href="technology.html">Technology</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Company</h3>
+          <ul>
+            <li><a href="about.html">About</a></li>
+            <li><a href="#">Press kit <span class="ph">[soon]</span></a></li>
+            <li><a href="#">Join the team <span class="ph">[soon]</span></a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Contact</h3>
+          <ul>
+            <li><a href="mailto:[team@email]"><span class="ph">[team@email]</span></a></li>
+            <li><a href="#">Accessibility statement <span class="ph">[soon]</span></a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="footer-note">Films and images on this site show concept visualizations of the planned experience. &copy; 2026 WalkAbout</p>
+    </div>
+  </footer>
+
+  <!-- ===================== "IS MY BUILDING MAPPED?" ===================== -->
+  <dialog id="check-dialog" aria-labelledby="check-dialog-h">
+    <button class="dialog__close" aria-label="Close">&times;</button>
+    <div class="dialog__body">
+      <h2 id="check-dialog-h" style="font-size:var(--t-lg)">Is my building mapped?</h2>
+      <form class="check-form" novalidate>
+        <label for="place-dialog">Campus or building</label>
+        <div class="form-row">
+          <input id="place-dialog" type="text" name="place" autocomplete="off" placeholder="e.g. MIT Building E52">
+          <button class="btn" type="submit">Check</button>
+        </div>
+      </form>
+      <div class="check-result form-msg" role="status"></div>
+    </div>
+  </dialog>
+
+  <script src="assets/js/main.js?v=20261123s"></script>
+</body>
+</html>

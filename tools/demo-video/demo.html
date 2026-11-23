@@ -1,0 +1,805 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WalkAbout demo film</title>
+<!-- Source for assets/media/walkabout-demo.mp4 / .gif.
+     Open with ?play to watch in a browser; render.js captures it frame by frame. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&display=block" rel="stylesheet">
+<style>
+  html, body { margin: 0; background: #000; overflow: hidden; }
+  #stage { position: relative; width: 1920px; height: 1080px; transform-origin: 0 0; }
+  canvas { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="gl" width="1920" height="1080"></canvas>
+  <canvas id="ui" width="1920" height="1080"></canvas>
+</div>
+<script src="vendor/three.min.js"></script>
+<script>
+/* ==========================================================================
+   Timeline (seconds)
+   ========================================================================== */
+const W = 1920, H = 1080, DUR = 18.4, FPS = 30;
+const T = {
+  titleIn: [0.15, 0.9], titleUp: [0.95, 1.7], phoneUp: [1.3, 2.25],
+  typeFrom: [2.3, 2.95], typeTo: [3.05, 3.7], chip: 3.85, go: 4.25,
+  preview: [4.4, 4.75], zoom: [4.75, 5.55], uiOut: [5.35, 5.7],
+  model: [5.35, 13.4], routeF: [5.95, 8.15], tapS: 8.75, ghost: [8.85, 9.25], routeS: [9.15, 11.85],
+  dive: [12.8, 13.4], white: [13.05, 13.4],
+  ar: [13.4, 16.85], arIn: [13.4, 13.8], phoneIn: [13.5, 14.25],
+  endFade: [16.45, 16.85], endText: [16.9, 17.6],
+};
+const C = {
+  ink: '#0B0B0B', paper: '#FFFFFF', muted: '#5E5E5E', grid: '#E3E3E3', soft: '#F5F5F5',
+  blue: '#1D4ED8', yellow: '#F5B700', bg3d: '#F2F2F2',
+};
+const FONT = '"Jost", "Futura PT", Futura, system-ui, sans-serif';
+
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const prog = (t, r) => clamp((t - r[0]) / (r[1] - r[0]));
+const eInOut = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const eOut = x => 1 - Math.pow(1 - x, 3);
+const eOut5 = x => 1 - Math.pow(1 - x, 5);
+const eIn = x => x * x * x;
+const within = (t, r) => t >= r[0] && t < r[1];
+
+/* ==========================================================================
+   Canvases
+   ========================================================================== */
+const glCanvas = document.getElementById('gl');
+const ui = document.getElementById('ui');
+const ctx = ui.getContext('2d');
+
+const renderer = new THREE.WebGLRenderer({ canvas: glCanvas, antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1);
+renderer.setSize(W, H, false);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+/* ==========================================================================
+   Scene 2: white architectural model (E52 -> bridge -> E51)
+   ========================================================================== */
+const sceneM = new THREE.Scene();
+sceneM.background = new THREE.Color(C.bg3d);
+sceneM.fog = new THREE.Fog(C.bg3d, 150, 330);
+
+const WHITE = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.92, metalness: 0 });
+const STREET = new THREE.MeshStandardMaterial({ color: 0xe2e2e2, roughness: 1 });
+const EDGE = new THREE.LineBasicMaterial({ color: 0x9a9a9a, transparent: true, opacity: 0.55 });
+
+function box(g, w, h, d, x, y, z, mat = WHITE, edges = true) {
+  const geo = new THREE.BoxGeometry(w, h, d);
+  const m = new THREE.Mesh(geo, mat);
+  m.position.set(x, y + h / 2, z);
+  m.castShadow = m.receiveShadow = true;
+  g.add(m);
+  if (edges) {
+    const e = new THREE.LineSegments(new THREE.EdgesGeometry(geo), EDGE);
+    e.position.copy(m.position);
+    g.add(e);
+  }
+  return m;
+}
+
+const model = new THREE.Group();
+sceneM.add(model);
+const P = 1.2;                                  // campus podium: ground floors sit 1.2 m above the street
+const bld = new THREE.Group(); bld.position.y = P; model.add(bld);
+
+// ground
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), new THREE.MeshStandardMaterial({ color: 0xf6f6f6, roughness: 1 }));
+ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; model.add(ground);
+
+// street + sidewalk + crosswalk
+const street = new THREE.Mesh(new THREE.PlaneGeometry(260, 12), STREET);
+street.rotation.x = -Math.PI / 2; street.position.set(0, 0.02, 27); street.receiveShadow = true; model.add(street);
+for (let x = -120; x < 120; x += 8) if (Math.abs(x + 22) > 6) box(model, 3.5, 0.04, 0.35, x, 0.03, 27, WHITE, false);
+for (let z = 21.8; z < 32.5; z += 1.6) box(model, 4, 0.05, 0.8, -22, 0.03, z, WHITE, false);
+box(model, 260, 0.18, 7, 0, 0, 17.5, WHITE, false);
+
+// podium, main entrance stairs, side entrance ramp (1:12)
+box(model, 66, P, 28, 2, 0, 0);
+for (let i = 0; i < 4; i++) box(model, 5, P * (4 - i) / 4, 0.75, -17.5, 0, 14.375 + i * 0.75);
+{
+  const sh = new THREE.Shape(); sh.moveTo(9, 0); sh.lineTo(-6, 0); sh.lineTo(-6, P); sh.closePath();
+  const geo = new THREE.ExtrudeGeometry(sh, { depth: 2.4, bevelEnabled: false });
+  const m = new THREE.Mesh(geo, WHITE); m.position.z = 14; m.castShadow = m.receiveShadow = true; model.add(m);
+  const e = new THREE.LineSegments(new THREE.EdgesGeometry(geo), EDGE); e.position.z = 14; model.add(e);
+  // handrail
+  const rail = new THREE.Mesh(new THREE.BoxGeometry(15.05, 0.08, 0.08), WHITE);
+  rail.position.set(1.5, P / 2 + 0.9, 16.3); rail.rotation.z = -Math.atan2(P, 15); model.add(rail);
+  for (let x = -6; x <= 9; x += 3) box(model, 0.08, 0.9, 0.08, x, P * (9 - x) / 15, 16.3, WHITE, false);
+}
+
+function building(x0, x1, z0, z1, floors, fh, sideFins) {
+  const g = new THREE.Group(); bld.add(g);
+  const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2, Hh = floors * fh;
+  box(g, x1 - x0, 0.3, z1 - z0, cx, 0, cz);
+  for (let i = 1; i <= floors; i++) {
+    const roof = i === floors;
+    box(g, x1 - x0 + 0.6, roof ? 0.7 : 0.4, z1 - z0 + 0.6, cx, i * fh - (roof ? 0.7 : 0.4), cz);
+  }
+  box(g, x1 - x0, Hh, 0.4, cx, 0, z0 + 0.2);                 // back wall
+  const solidX = sideFins === 'x1' ? x0 : x1, finX = sideFins === 'x1' ? x1 : x0;
+  box(g, 0.4, Hh, z1 - z0, solidX + (solidX === x0 ? 0.2 : -0.2), 0, cz); // solid side
+  for (let z = z0 + 1; z < z1; z += 1.6) box(g, 0.5, Hh, 0.18, finX, 0, z, WHITE, false); // fin side
+  for (let x = x0; x <= x1 + 0.01; x += 5) box(g, 0.5, Hh, 0.5, x, 0, z1 - 0.25); // front columns
+  return g;
+}
+building(-30, 0, -12, 12, 5, 4, 'x1');   // E52
+building(14, 34, -10, 10, 4, 4, 'x0');   // E51
+// cores: E52 elevator, E52 stair, E51 elevator
+box(bld, 4, 21.5, 4, -6, 0, 5);
+box(bld, 4, 21.5, 4, -24, 0, 3);
+box(bld, 3, 17.2, 3, 29.5, 0, -6.5);
+// interior partitions (suggest rooms)
+for (let l = 1; l < 5; l++) { box(bld, 12, 3, 0.25, -14, l * 4, -4, WHITE); }
+for (let l = 1; l < 4; l++) if (l !== 2) box(bld, 10, 3, 0.25, 22, l * 4, -2, WHITE);
+// Room 345 walls (E51, level 3)
+box(bld, 7, 3, 0.25, 24.5, 8, 9);
+box(bld, 0.25, 3, 6, 21, 8, 6);
+box(bld, 0.25, 3, 6, 28, 8, 6);
+box(bld, 2.5, 3, 0.25, 22.25, 8, 3);
+box(bld, 2.5, 3, 0.25, 26.75, 8, 3);
+// 3rd-floor bridge
+box(bld, 14.6, 0.45, 4.4, 7, 7.6, 0);
+box(bld, 14.6, 0.35, 4.4, 7, 11.5, 0);
+for (let x = 0.4; x < 14; x += 1.4) { box(bld, 0.14, 3.5, 0.14, x, 8, 2.1, WHITE, false); box(bld, 0.14, 3.5, 0.14, x, 8, -2.1, WHITE, false); }
+// context massing
+box(model, 22, 14, 22, -54, 0, -4);
+box(model, 18, 24, 24, 54, 0, -2);
+box(model, 40, 10, 16, 0, 0, -40);
+box(model, 26, 18, 18, -40, 0, -42);
+// trees (white architectural model trees)
+const treeGeo = new THREE.SphereGeometry(2.1, 20, 14), trunkGeo = new THREE.CylinderGeometry(0.15, 0.15, 2.6, 8);
+[-46, -36, -29, 16, 24, 40, 48].forEach(x => {
+  const t1 = new THREE.Mesh(trunkGeo, WHITE); t1.position.set(x, 1.3, 20.4); t1.castShadow = true; model.add(t1);
+  const t2 = new THREE.Mesh(treeGeo, WHITE); t2.position.set(x, 4.2, 20.4); t2.castShadow = true; t2.receiveShadow = true; model.add(t2);
+});
+
+// lights
+sceneM.add(new THREE.HemisphereLight(0xffffff, 0xcfcfcf, 2.1));
+const sun = new THREE.DirectionalLight(0xffffff, 2.0);
+sun.position.set(-55, 100, 65); sun.castShadow = true;
+sun.shadow.mapSize.set(4096, 4096);
+Object.assign(sun.shadow.camera, { left: -90, right: 90, top: 90, bottom: -90, near: 10, far: 300 });
+sun.shadow.bias = -0.0004; sun.shadow.radius = 4;
+sceneM.add(sun);
+
+// Routes: fastest (main door, stairs) and step-free (ramp, elevator)
+const G = 0.45, G1 = P + G, L3 = P + 8 + G;
+const TAIL = [[-2, L3, 8.6], [-2, L3, 0], [14, L3, 0], [19, L3, 0], [24.5, L3, 1.5], [24.5, L3, 6]];
+const dotGeo = new THREE.SphereGeometry(0.36, 14, 10);
+function makeRoute(pts) {
+  const V = pts.map(p => new THREE.Vector3(...p));
+  const seg = [0]; for (let i = 1; i < V.length; i++) seg.push(seg[i - 1] + V[i].distanceTo(V[i - 1]));
+  const len = seg[seg.length - 1];
+  const at = d => {
+    d = clamp(d, 0, len);
+    let i = 1; while (i < seg.length - 1 && seg[i] < d) i++;
+    return V[i - 1].clone().lerp(V[i], (d - seg[i - 1]) / (seg[i] - seg[i - 1] || 1));
+  };
+  const dots = []; for (let d = 0; d <= len; d += 0.95) dots.push(d);
+  const mat = new THREE.MeshBasicMaterial({ color: C.blue, transparent: true });
+  const mesh = new THREE.InstancedMesh(dotGeo, mat, dots.length);
+  const m = new THREE.Matrix4(); dots.forEach((d, i) => { m.makeTranslation(...at(d).toArray()); mesh.setMatrixAt(i, m); });
+  mesh.count = 0; mesh.frustumCulled = false; sceneM.add(mesh);
+  return { V, seg, len, at, dots, mesh, mat, draw(d) { mesh.count = dots.filter(x => x <= d).length; } };
+}
+const RF = makeRoute([
+  [-22, G, 30], [-22, G, 18.2], [-17.5, G, 17.6], [-17.5, G1, 14.2], [-17.5, G1, 12], [-21, G1, 7],
+  [-22.5, G1, 6.5], [-25.5, G1 + 2, 6.5], [-22.5, G1 + 4, 6.5], [-25.5, G1 + 6, 6.5], [-22.5, L3, 6.5], [-22.5, L3, 8.6],
+  ...TAIL]);
+const RS = makeRoute([
+  [-22, G, 30], [-22, G, 18.2], [9.6, G, 18.2], [9.6, G, 15.2], [-6, G1, 15.2], [-8, G1, 13.4], [-8, G1, 12],
+  [-6, G1, 8.6], [-6, L3, 8.6], ...TAIL]);
+
+function glowTexture(rgb) {
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const x = c.getContext('2d'), g = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+  g.addColorStop(0, `rgba(${rgb},0.55)`); g.addColorStop(0.45, `rgba(${rgb},0.18)`); g.addColorStop(1, `rgba(${rgb},0)`);
+  x.fillStyle = g; x.fillRect(0, 0, 128, 128);
+  return new THREE.CanvasTexture(c);
+}
+const head = new THREE.Mesh(new THREE.SphereGeometry(0.7, 20, 14), new THREE.MeshBasicMaterial({ color: C.blue }));
+const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTexture('29,78,216'), depthWrite: false, transparent: true }));
+halo.scale.set(7, 7, 1); sceneM.add(head, halo);
+
+// yellow level-change markers (bottom and top of each vertical connection)
+const lvlGeo = new THREE.CylinderGeometry(1.1, 1.1, 0.15, 32);
+function lvl(x, y, z) { const m = new THREE.Mesh(lvlGeo, new THREE.MeshBasicMaterial({ color: C.yellow, transparent: true })); m.position.set(x, y, z); sceneM.add(m); return m; }
+const LV = { F: [lvl(-24, P + 0.25, 6.5), lvl(-24, P + 8.25, 6.5)], S: [lvl(-6, P + 0.25, 8.6), lvl(-6, P + 8.25, 8.6)] };
+
+// origin marker and destination pin
+const originM = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.1, 0.2, 32), new THREE.MeshBasicMaterial({ color: C.ink }));
+originM.position.set(-22, 0.15, 30); sceneM.add(originM);
+const originRing = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.22, 32), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+originRing.position.set(-22, 0.2, 30); sceneM.add(originRing);
+const destPin = new THREE.Group();
+const pinStick = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 3.2, 8), new THREE.MeshBasicMaterial({ color: C.ink }));
+pinStick.position.y = 1.6;
+const pinHead = new THREE.Mesh(new THREE.SphereGeometry(0.75, 20, 14), new THREE.MeshBasicMaterial({ color: C.ink }));
+pinHead.position.y = 3.4;
+destPin.add(pinStick, pinHead); destPin.position.set(24.5, P + 8, 6); sceneM.add(destPin);
+const pulse = new THREE.Mesh(new THREE.RingGeometry(0.8, 1.05, 48), new THREE.MeshBasicMaterial({ color: C.blue, transparent: true, side: THREE.DoubleSide }));
+pulse.rotation.x = -Math.PI / 2; pulse.position.set(24.5, P + 8.1, 6); sceneM.add(pulse);
+
+const camM = new THREE.PerspectiveCamera(30, W / H, 1, 1000);
+const ORBIT_C = new THREE.Vector3(-3, 4, 9);
+
+// labels: route 'F' (fastest), 'S' (step-free), or shared '*'
+const LABELS = [
+  { text: 'Memorial Dr · street', at: new THREE.Vector3(-22, 0.5, 30), r: '*', d: 0 },
+  { text: 'Main entrance · 4 steps', at: new THREE.Vector3(-17.5, P + 0.4, 14.6), r: 'F', d: RF.seg[3] },
+  { text: 'Stairs to Level 3', at: new THREE.Vector3(-24, P + 4.4, 6.5), r: 'F', d: RF.seg[8], yellow: true },
+  { text: 'Ramp entrance', at: new THREE.Vector3(1.5, P / 2 + 0.6, 15.2), r: 'S', d: RS.seg[3] + 6 },
+  { text: 'Elevator to Level 3', at: new THREE.Vector3(-6, P + 4.3, 8.6), r: 'S', d: RS.seg[8] - 3, yellow: true },
+  { text: '3rd-floor bridge', at: new THREE.Vector3(7, P + 11.9, 0), r: 'S', d: RS.seg[10] + 7 },
+  { text: 'E51 · Room 345', at: new THREE.Vector3(24.5, P + 11.8, 6), r: '*', d: 1e9, dest: true },
+];
+const BLDG = [{ text: 'E52', at: new THREE.Vector3(-15, P + 21, -4) }, { text: 'E51', at: new THREE.Vector3(24, P + 17, -4) }];
+const GREY = new THREE.Color(0xa0a0a0), BLUE = new THREE.Color(C.blue);
+
+function updateModel(t) {
+  const p = prog(t, T.model);
+  const az = lerp(0.5, -0.32, eInOut(p));
+  const pull = eOut(prog(t, [T.model[0], T.model[0] + 2.3]));
+  let r = lerp(190, 118, pull) - 10 * prog(t, [T.model[0] + 2.3, T.dive[0]]);
+  let el = lerp(0.6, 0.38, pull);
+  let pos = new THREE.Vector3(ORBIT_C.x + r * Math.sin(az) * Math.cos(el), ORBIT_C.y + r * Math.sin(el), ORBIT_C.z + r * Math.cos(az) * Math.cos(el));
+  let target = ORBIT_C.clone();
+  const dv = eIn(prog(t, T.dive));
+  if (dv > 0) { pos.lerp(new THREE.Vector3(-8, 4, 26), dv); target.lerp(new THREE.Vector3(-8, 2.5, 10), dv); }
+  camM.position.copy(pos); camM.lookAt(target); camM.updateMatrixWorld();
+
+  const dF = eInOut(prog(t, T.routeF)) * RF.len, dS = eInOut(prog(t, T.routeS)) * RS.len;
+  const ghost = eInOut(prog(t, T.ghost));
+  RF.draw(dF); RS.draw(dS);
+  RF.mat.color.copy(BLUE).lerp(GREY, ghost); RF.mat.opacity = lerp(1, 0.45, ghost);
+  const onS = t >= T.routeS[0];
+  const hp = onS ? RS.at(dS) : RF.at(dF);
+  head.visible = halo.visible = onS ? dS > 0.01 : (dF > 0.01 && ghost < 0.01);
+  head.position.copy(hp); halo.position.copy(hp);
+  halo.scale.setScalar(6 + Math.sin(t * 7) * 0.8);
+  LV.F.forEach((m, i) => { m.visible = dF >= RF.seg[6 + i * 4] - 0.5; m.material.opacity = 1 - ghost * 0.7; });
+  LV.S.forEach((m, i) => { m.visible = dS >= RS.seg[7 + i] - 0.5; });
+  const arriveF = dF >= RF.len - 0.01, arriveS = dS >= RS.len - 0.01;
+  destPin.scale.setScalar(Math.max(arriveF ? eOut5(prog(t, [T.routeF[1], T.routeF[1] + 0.35])) : 0, 0.0001));
+  pulse.visible = (arriveF && ghost < 0.01) || arriveS;
+  const pp = ((t - T.routeF[1]) % 1.1) / 1.1;
+  pulse.scale.setScalar(1 + pp * 3.5); pulse.material.opacity = (1 - pp) * 0.9;
+  return { dF, dS, ghost };
+}
+
+/* ==========================================================================
+   Scene 3: corridor for AR
+   ========================================================================== */
+const sceneA = new THREE.Scene();
+sceneA.background = new THREE.Color(0xffffff);
+sceneA.fog = new THREE.Fog(0xffffff, 9, 38);
+const WALL = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.95 });
+const FLOOR = new THREE.MeshStandardMaterial({ color: 0xd4d4d4, roughness: 0.8 });
+const DOOR = new THREE.MeshStandardMaterial({ color: 0xcdcdcd, roughness: 0.6 });
+const METAL = new THREE.MeshStandardMaterial({ color: 0xa6a6a6, roughness: 0.35, metalness: 0.4 });
+const DARK = new THREE.MeshStandardMaterial({ color: 0x9a9a9a, roughness: 0.8 });
+const ar = new THREE.Group(); sceneA.add(ar);
+const flo = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 34), FLOOR); flo.rotation.x = -Math.PI / 2; flo.position.set(0, 0, -11); ar.add(flo);
+for (let z = 4; z > -26; z -= 1.2) { const s = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 0.015), new THREE.MeshBasicMaterial({ color: 0xcfcfcf })); s.rotation.x = -Math.PI / 2; s.position.set(0, 0.002, z); ar.add(s); }
+const ceil = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 34), new THREE.MeshStandardMaterial({ color: 0xf0f0f0 })); ceil.rotation.x = Math.PI / 2; ceil.position.set(0, 2.9, -11); ar.add(ceil);
+function abox(w, h, d, x, y, z, mat) { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); m.position.set(x, y + h / 2, z); ar.add(m); return m; }
+abox(0.2, 2.9, 34, -1.8, 0, -11, WALL); abox(0.2, 2.9, 34, 1.8, 0, -11, WALL);
+abox(0.02, 0.1, 34, -1.69, 0, -11, DARK); abox(0.02, 0.1, 34, 1.69, 0, -11, DARK);
+for (let z = -1; z > -26; z -= 4) abox(0.35, 0.02, 1.2, 0, 2.87, z, new THREE.MeshBasicMaterial({ color: 0xffffff }));
+[[-1, -3], [1, -5.5], [-1, -9], [1, -11.5], [-1, -15], [1, -17.5], [-1, -21]].forEach(([s, z]) => {
+  abox(0.06, 2.2, 1.05, s * 1.68, 0, z, DOOR);
+  abox(0.04, 0.22, 0.3, s * 1.67, 1.5, z + 0.85, new THREE.MeshStandardMaterial({ color: 0x3a3a3a }));
+});
+abox(3.6, 2.9, 0.2, 0, 0, -26.1, WALL);
+abox(0.62, 2.2, 0.06, -0.33, 0, -25.97, METAL); abox(0.62, 2.2, 0.06, 0.33, 0, -25.97, METAL);
+abox(1.5, 0.12, 0.08, 0, 2.2, -25.96, DARK);
+abox(0.22, 0.22, 0.04, 0, 2.45, -25.95, new THREE.MeshBasicMaterial({ color: C.yellow }));
+sceneA.add(new THREE.HemisphereLight(0xffffff, 0xd0d0d0, 3.2), new THREE.AmbientLight(0xffffff, 1.1));
+const aSun = new THREE.DirectionalLight(0xffffff, 1.2); aSun.position.set(2, 6, 4); sceneA.add(aSun);
+
+// AR path (only rendered inside the phone)
+const arPath = new THREE.Group(); sceneA.add(arPath);
+const pathMat = new THREE.MeshBasicMaterial({ color: C.blue, transparent: true, opacity: 0.95 });
+const discGeo = new THREE.CircleGeometry(0.075, 20);
+const arDots = [];
+for (let z = 1.5; z > -25.4; z -= 0.42) { const m = new THREE.Mesh(discGeo, pathMat); m.rotation.x = -Math.PI / 2; m.position.set(0, 0.012, z); arPath.add(m); arDots.push(m); }
+const chev = new THREE.Shape();
+chev.moveTo(-0.42, 0); chev.lineTo(0, 0.38); chev.lineTo(0.42, 0); chev.lineTo(0.42, -0.16); chev.lineTo(0, 0.2); chev.lineTo(-0.42, -0.16); chev.closePath();
+const chevGeo = new THREE.ShapeGeometry(chev);
+const chevs = []; for (let i = 0; i < 14; i++) { const m = new THREE.Mesh(chevGeo, new THREE.MeshBasicMaterial({ color: C.blue, transparent: true })); m.rotation.x = -Math.PI / 2; arPath.add(m); chevs.push(m); }
+
+const camA = new THREE.PerspectiveCamera(52, W / H, 0.05, 100);
+const camP = new THREE.PerspectiveCamera(60, 380 / 800, 0.05, 100);
+const ELEV = new THREE.Vector3(0, 2.75, -25.9);
+
+/* ==========================================================================
+   2D helpers
+   ========================================================================== */
+function font(px, w = 500) { ctx.font = `${w} ${px}px ${FONT}`; }
+function text(s, x, y, px, { w = 500, color = C.ink, align = 'left', alpha = 1, track = 0.025, base = 'alphabetic' } = {}) {
+  font(px, w); ctx.save(); ctx.globalAlpha *= alpha; ctx.fillStyle = color; ctx.textAlign = align; ctx.textBaseline = base;
+  ctx.letterSpacing = `${track * px}px`; ctx.fillText(s, x, y); ctx.restore();
+}
+function measure(s, px, w = 500, track = 0.025) { font(px, w); ctx.letterSpacing = `${track * px}px`; const m = ctx.measureText(s).width; ctx.letterSpacing = '0px'; return m; }
+function rr(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); }
+
+/* --------------------------------------------------------------------------
+   Scene 1: phone, typing origin and destination
+   -------------------------------------------------------------------------- */
+const K = 1.2;                       // screen points -> px
+const PH = { w: 390 * K + 32, h: 844 * K + 32, r: 80 };
+const FROM = 'Memorial Dr · street', TO = 'E51 · Room 345';
+
+function drawScreen(t) {
+  // in screen-point coordinates (390 x 844)
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, 390, 844);
+  text('9:41', 36, 38, 16, { w: 600, track: 0 });
+  ctx.fillStyle = C.ink; rr(326, 26, 26, 12, 4); ctx.fill();
+  for (let i = 0; i < 4; i++) { ctx.fillRect(292 + i * 6, 36 - (i + 1) * 3, 4, (i + 1) * 3); }
+  ctx.fillStyle = '#000'; rr(140, 12, 110, 32, 16); ctx.fill(); // island
+
+  text('WalkAbout', 24, 86, 14, { w: 600, color: C.muted });
+  text('Plan a route', 24, 124, 30, { w: 600 });
+
+  // fields card
+  ctx.fillStyle = C.soft; rr(16, 146, 358, 128, 18); ctx.fill();
+  const nF = Math.round(FROM.length * prog(t, T.typeFrom)), nT = Math.round(TO.length * prog(t, T.typeTo));
+  const caretOn = Math.floor(t * 2.4) % 2 === 0;
+  // icons + connector
+  ctx.strokeStyle = C.ink; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.arc(40, 182, 7, 0, 7); ctx.stroke();
+  ctx.fillStyle = C.blue; ctx.beginPath(); ctx.arc(40, 240, 8, 0, 7); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(40, 240, 3, 0, 7); ctx.fill();
+  ctx.fillStyle = '#9a9a9a'; for (let y = 196; y < 230; y += 7) { ctx.beginPath(); ctx.arc(40, y, 1.4, 0, 7); ctx.fill(); }
+  ctx.fillStyle = C.grid; ctx.fillRect(64, 210, 294, 1.5);
+  text('From', 64, 172, 12, { color: C.muted });
+  text('To', 64, 232, 12, { color: C.muted });
+  const fieldY1 = 197, fieldY2 = 257;
+  if (nF) text(FROM.slice(0, nF), 64, fieldY1, 17, { w: 500 }); else text('Choose a start', 64, fieldY1, 17, { color: '#a0a0a0' });
+  if (nT) text(TO.slice(0, nT), 64, fieldY2, 17, { w: 500 }); else text('Search rooms, buildings', 64, fieldY2, 17, { color: '#a0a0a0' });
+  const activeF = t >= T.typeFrom[0] - 0.15 && t < T.typeTo[0] - 0.05, activeT = t >= T.typeTo[0] - 0.05 && t < T.chip - 0.1;
+  if (caretOn && (activeF || activeT)) {
+    const cx = 64 + (activeF ? (nF ? measure(FROM.slice(0, nF), 17) : 0) : (nT ? measure(TO.slice(0, nT), 17) : 0)) + 2;
+    ctx.fillStyle = C.blue; ctx.fillRect(cx, (activeF ? fieldY1 : fieldY2) - 16, 2, 20);
+  }
+
+  // traveler profile chips
+  text('Route for', 24, 312, 14, { w: 600 });
+  const chips = ['Fastest', 'Stroller', 'Wheelchair', 'Luggage'];
+  let x = 16; const on = 1;
+  chips.forEach((c, i) => {
+    const w = measure(c, 15, 500) + 30;
+    if (i === 0 && on > 0) {
+      ctx.fillStyle = C.blue; ctx.globalAlpha = on; rr(x, 326, w, 38, 19); ctx.fill(); ctx.globalAlpha = 1;
+    }
+    ctx.strokeStyle = i === 0 && on > 0.5 ? C.blue : '#d6d6d6'; ctx.lineWidth = 1.5; rr(x + 0.75, 326.75, w - 1.5, 36.5, 18.5); ctx.stroke();
+    text(c, x + 15, 350, 15, { color: i === 0 && on > 0.5 ? '#fff' : C.ink });
+    x += w + 8;
+  });
+
+  // start button
+  const press = within(t, [T.go, T.go + 0.16]) ? 0.97 : 1;
+  ctx.save(); ctx.translate(195, 415); ctx.scale(press, press);
+  ctx.fillStyle = C.ink; rr(-179, -27, 358, 54, 27); ctx.fill();
+  text('Start route', 0, 7, 18, { w: 600, color: '#fff', align: 'center' });
+  ctx.restore();
+
+  // lower area: recent list, then route preview
+  const pv = eOut(prog(t, T.preview));
+  ctx.save(); ctx.globalAlpha = 1 - pv;
+  text('Recent', 24, 486, 14, { w: 600 });
+  ['Stata Center · 32-123', 'Walker Memorial · Lobby', 'Hayden Library · Level 2'].forEach((s, i) => {
+    const y = 528 + i * 56;
+    ctx.strokeStyle = '#b5b5b5'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(36, y - 6, 8, 0, 7); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(36, y - 10); ctx.lineTo(36, y - 6); ctx.lineTo(39, y - 4); ctx.stroke();
+    text(s, 60, y, 16);
+    ctx.fillStyle = C.grid; ctx.fillRect(60, y + 22, 314, 1);
+  });
+  ctx.restore();
+  if (pv > 0) {
+    ctx.save(); ctx.globalAlpha = pv; ctx.translate(0, (1 - pv) * 30);
+    ctx.fillStyle = C.bg3d; rr(16, 462, 358, 330, 22); ctx.fill();
+    text('5 min', 36, 506, 26, { w: 600 });
+    text('Arrive 9:46', 354, 506, 17, { w: 600, align: 'right', color: C.blue });
+    text('Fastest · main entrance · stairs to Level 3', 36, 534, 14, { color: C.muted });
+    // tiny route sketch (fades as the camera zooms in)
+    ctx.globalAlpha = pv * (1 - clamp(prog(t, T.zoom) * 3));
+    ctx.fillStyle = C.blue;
+    const pts = [[50, 760], [50, 700], [110, 680], [110, 600], [300, 600], [330, 640]];
+    for (let i = 1; i < pts.length; i++) {
+      const [a, b] = [pts[i - 1], pts[i]], n = Math.hypot(b[0] - a[0], b[1] - a[1]) / 12;
+      for (let j = 0; j < n; j++) { ctx.beginPath(); ctx.arc(lerp(a[0], b[0], j / n), lerp(a[1], b[1], j / n), 3.2, 0, 7); ctx.fill(); }
+    }
+    ctx.strokeStyle = '#c9c9c9'; ctx.lineWidth = 1.5; ctx.strokeRect(80, 590, 90, 140); ctx.strokeRect(250, 580, 70, 120);
+    ctx.fillStyle = C.yellow; ctx.fillRect(104, 674, 12, 12);
+    ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(330, 640, 7, 0, 7); ctx.fill();
+    ctx.restore();
+  }
+  // home indicator
+  ctx.fillStyle = C.ink; rr(130, 828, 130, 5, 3); ctx.fill();
+}
+
+function drawTap(x, y, t0, t) {
+  const p = prog(t, [t0 - 0.05, t0 + 0.35]); if (p <= 0 || p >= 1) return;
+  ctx.fillStyle = `rgba(11,11,11,${0.18 * (1 - p)})`; ctx.beginPath(); ctx.arc(x, y, 18 + p * 18, 0, 7); ctx.fill();
+}
+
+function scene1(t) {
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+  const tu = eInOut(prog(t, T.titleUp)), ti = eOut(prog(t, T.titleIn));
+  const zoom = eIn(prog(t, T.zoom));
+
+  // phone
+  const pu = eOut5(prog(t, T.phoneUp));
+  const px = W / 2 - PH.w / 2, py = lerp(1150, 210, pu);
+  // zoom: focus on the route preview card, scale up around it
+  const focus = { x: px + 16 + 195 * K, y: py + 16 + 627 * K };
+  const s = lerp(1, 7.5, zoom);
+  ctx.save();
+  ctx.translate(lerp(focus.x, W / 2, zoom), lerp(focus.y, H / 2, zoom));
+  ctx.scale(s, s);
+  ctx.translate(-focus.x, -focus.y);
+  // device
+  ctx.fillStyle = '#1b1b1b'; rr(px - 3, py - 3, PH.w + 6, PH.h + 6, PH.r + 3); ctx.fill();
+  ctx.fillStyle = '#000'; rr(px, py, PH.w, PH.h, PH.r); ctx.fill();
+  ctx.save(); rr(px + 16, py + 16, PH.w - 32, PH.h - 32, PH.r - 16); ctx.clip();
+  ctx.translate(px + 16, py + 16); ctx.scale(K, K);
+  drawScreen(t);
+  // touches (screen coords)
+  drawTap(24 + measure(FROM, 17) / 2 + 40, 197, T.typeFrom[0] - 0.05, t);
+  drawTap(220, 418, T.go, t);
+  ctx.restore();
+  ctx.restore();
+  // title
+  ctx.save();
+  ctx.globalAlpha = ti * (1 - prog(t, [T.zoom[0] - 0.25, T.zoom[0] + 0.05]));
+  ctx.filter = `blur(${(1 - ti) * 18}px)`;
+  const ty = lerp(560, 128, tu), ts = lerp(150, 64, tu) * lerp(1.06, 1, ti);
+  text('Where to?', W / 2, ty, ts, { w: 600, color: '#fff', align: 'center', base: 'middle', track: 0.01 });
+  ctx.restore();
+
+  // fill toward 3D background as the zoom completes
+  if (zoom > 0.6) { ctx.fillStyle = C.bg3d; ctx.globalAlpha = eIn(prog(zoom, [0.6, 1])); ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1; }
+}
+
+/* --------------------------------------------------------------------------
+   Scene 2 overlay: labels
+   -------------------------------------------------------------------------- */
+function project(v, cam, rect = { x: 0, y: 0, w: W, h: H }) {
+  const p = v.clone().project(cam);
+  return { x: rect.x + (p.x + 1) / 2 * rect.w, y: rect.y + (1 - p.y) / 2 * rect.h, z: p.z };
+}
+function pill(s, x, y, { alpha = 1, dot = null, px = 24, dark = false } = {}) {
+  const tw = measure(s, px, 500), padL = dot ? 40 : 20, w = tw + padL + 20, h = px * 1.9;
+  ctx.save(); ctx.globalAlpha = alpha;
+  ctx.shadowColor = 'rgba(0,0,0,0.12)'; ctx.shadowBlur = 18; ctx.shadowOffsetY = 4;
+  ctx.fillStyle = dark ? C.ink : '#fff'; rr(x - w / 2, y - h / 2, w, h, h / 2); ctx.fill();
+  ctx.shadowColor = 'transparent';
+  if (dot) { ctx.fillStyle = dot; ctx.beginPath(); ctx.arc(x - w / 2 + 22, y, 6, 0, 7); ctx.fill(); }
+  text(s, x - w / 2 + padL, y + px * 0.36, px, { color: dark ? '#fff' : C.ink });
+  ctx.restore();
+}
+const PREFS = ['Fastest', 'Stroller', 'Wheelchair', 'Luggage'];
+function prefBar(t) {
+  const a = eOut(prog(t, [T.model[0] + 0.5, T.model[0] + 1.0])) * (1 - prog(t, [T.dive[0], T.dive[0] + 0.25]));
+  if (a <= 0) return;
+  const px = 24, gap = 10, pad = 10, h = 56;
+  const ws = PREFS.map(s => measure(s, px, 500) + 44);
+  const total = ws.reduce((x, y) => x + y, 0) + gap * (PREFS.length - 1) + pad * 2;
+  const x0 = W / 2 - total / 2, y0 = H - 128 + (1 - a) * 20;
+  ctx.save(); ctx.globalAlpha = a;
+  ctx.shadowColor = 'rgba(0,0,0,0.14)'; ctx.shadowBlur = 30; ctx.shadowOffsetY = 8;
+  ctx.fillStyle = '#fff'; rr(x0, y0, total, h + pad * 2, (h + pad * 2) / 2); ctx.fill();
+  ctx.shadowColor = 'transparent';
+  const xs = []; let x = x0 + pad; ws.forEach(w => { xs.push(x); x += w + gap; });
+  const k = eInOut(prog(t, [T.tapS + 0.02, T.tapS + 0.32]));
+  const sx = lerp(xs[0], xs[1], k), sw = lerp(ws[0], ws[1], k);
+  ctx.fillStyle = C.blue; rr(sx, y0 + pad, sw, h, h / 2); ctx.fill();
+  PREFS.forEach((s, i) => {
+    const sel = (i === 0 && k < 0.5) || (i === 1 && k >= 0.5);
+    text(s, xs[i] + ws[i] / 2, y0 + pad + h / 2 + px * 0.36, px, { align: 'center', color: sel ? '#fff' : C.ink });
+  });
+  const tp = prog(t, [T.tapS - 0.1, T.tapS + 0.4]);
+  if (tp > 0 && tp < 1) { ctx.fillStyle = `rgba(11,11,11,${0.22 * (1 - tp)})`; ctx.beginPath(); ctx.arc(xs[1] + ws[1] / 2, y0 + pad + h / 2, 26 + tp * 26, 0, 7); ctx.fill(); }
+  ctx.restore();
+}
+function routeCard(t) {
+  const a = eOut(prog(t, [T.model[0] + 0.7, T.model[0] + 1.2])) * (1 - prog(t, [T.dive[0], T.dive[0] + 0.25]));
+  if (a <= 0) return;
+  const sw = eInOut(prog(t, T.ghost));
+  const w = 400, h = 150, x0 = W - 120 - w, y0 = 78;
+  ctx.save(); ctx.globalAlpha = a;
+  ctx.shadowColor = 'rgba(0,0,0,0.12)'; ctx.shadowBlur = 30; ctx.shadowOffsetY = 8;
+  ctx.fillStyle = '#fff'; rr(x0, y0, w, h, 26); ctx.fill(); ctx.shadowColor = 'transparent';
+  ctx.beginPath(); ctx.rect(x0, y0, w, h); ctx.clip();
+  [[0, 'FASTEST', '5 min', 'Arrive 9:46', 'Main entrance · stairs'], [1, 'STROLLER · STEP-FREE', '6 min', 'Arrive 9:47', 'Ramp entrance · elevator']].forEach(([i, tag, min, eta, via]) => {
+    const al = i ? sw : 1 - sw; if (al <= 0.01) return;
+    const dy = (i ? 1 - sw : -sw) * 14;
+    text(tag, x0 + 28, y0 + 40 + dy, 14, { w: 600, color: C.muted, track: 0.12, alpha: al });
+    text(min, x0 + 28, y0 + 92 + dy, 44, { w: 600, alpha: al, track: 0.01 });
+    text(eta, x0 + w - 28, y0 + 92 + dy, 24, { w: 600, align: 'right', color: C.blue, alpha: al });
+    text(via, x0 + 28, y0 + 128 + dy, 18, { color: C.muted, alpha: al });
+  });
+  ctx.restore();
+}
+function scene2Overlay(t, st) {
+  const fade = 1 - prog(t, [T.dive[0], T.dive[0] + 0.25]);
+  BLDG.forEach(b => { const p = project(b.at, camM); if (p.x < 1000 && p.y < 240) return; text(b.text, p.x, p.y - 14, 30, { w: 600, color: '#8a8a8a', align: 'center', alpha: fade * prog(t, [5.6, 6.2]), track: 0.08 }); });
+  LABELS.forEach(L => {
+    const d = L.r === 'S' ? st.dS : L.r === 'F' ? st.dF : Math.max(st.dF, st.dS);
+    let a = eOut(clamp((d - L.d + 1.5) / 4)) * fade;
+    if (L.dest) a = eOut(prog(t, [T.routeF[1] - 0.1, T.routeF[1] + 0.3])) * fade;
+    if (L.r === 'F') a *= 1 - st.ghost;
+    if (a <= 0) return;
+    const p = project(L.at, camM), lift = 64 + (L.dest ? 12 : 0);
+    ctx.save(); ctx.globalAlpha = a; ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x, p.y - lift + 22); ctx.stroke();
+    ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, 7); ctx.fill(); ctx.restore();
+    pill(L.text, p.x, p.y - lift - (1 - a) * 10, { alpha: a, dot: L.yellow ? C.yellow : (L.dest ? C.blue : null), dark: !!L.dest });
+  });
+  const c1 = prog(t, [6.1, 6.7]) * (1 - prog(t, [T.tapS - 0.3, T.tapS]));
+  text('One route,', 120, 118, 60, { w: 600, alpha: c1, track: 0.01 });
+  text('from the street to the room.', 120, 182, 60, { w: 600, alpha: c1 * prog(t, [6.35, 6.95]), color: '#5E5E5E', track: 0.01 });
+  const c2 = prog(t, [T.ghost[0] + 0.1, T.ghost[1] + 0.3]) * fade;
+  text('Routes for', 120, 118, 60, { w: 600, alpha: c2, track: 0.01 });
+  text('how you move.', 120, 182, 60, { w: 600, alpha: c2, color: '#5E5E5E', track: 0.01 });
+  routeCard(t);
+  prefBar(t);
+}
+
+/* --------------------------------------------------------------------------
+   Scene 3: AR on the phone
+   -------------------------------------------------------------------------- */
+function phoneRect(t) {
+  const pin = eOut5(prog(t, T.phoneIn));
+  const sway = Math.sin(t * 1.7) * 6, bob = Math.sin(t * 3.4) * 4;
+  return { x: W / 2 - 190 + sway + 40, y: lerp(1120, 168, pin) + bob, w: 380, h: 800, r: 52 };
+}
+// Hand in soft greyscale "clay" (stylized 3D look, no outlines). Pose: right hand, palm behind the phone,
+// chunky fingertips wrapping onto the left of the screen, a fat thumb resting on the lower right of the screen,
+// wrist leaving the frame to the lower right.
+const SKIN = { hi: '#dcdcdc', mid: '#b9b9b9', lo: '#8f8f8f', deep: '#7c7c7c' };
+function clayFill(cx, cy, r) {
+  // radial light from the upper left gives the rounded, sculpted look
+  const g = ctx.createRadialGradient(cx - r * 0.35, cy - r * 0.45, r * 0.1, cx, cy, r * 1.25);
+  g.addColorStop(0, SKIN.hi); g.addColorStop(0.55, SKIN.mid); g.addColorStop(1, SKIN.lo);
+  return g;
+}
+function paintPalm(R, shadow) {
+  const { x, y, w, h } = R;
+  const g = ctx.createLinearGradient(x + w * 0.3, y + h * 0.6, x + w + 300, H + 40);
+  g.addColorStop(0, SKIN.lo); g.addColorStop(0.35, SKIN.mid); g.addColorStop(0.7, SKIN.hi); g.addColorStop(1, SKIN.mid);
+  ctx.fillStyle = g;
+  if (shadow) { ctx.shadowColor = 'rgba(0,0,0,0.2)'; ctx.shadowBlur = 50; ctx.shadowOffsetY = 14; }
+  ctx.beginPath();
+  // narrow hand: left edge curves down from under the phone, right edge continues the thumb's outer line
+  ctx.moveTo(x + 60, y + h - 10);
+  ctx.bezierCurveTo(x + 80, y + h + 60, x + 170, y + h + 110, x + 250, H + 60);    // heel of the palm
+  ctx.lineTo(x + w + 240, H + 60);                                                 // wrist to the lower right
+  ctx.bezierCurveTo(x + w + 170, y + h * 0.95, x + w + 110, y + h * 0.79, x + w + 70, y + h * 0.68); // along the thumb
+  ctx.lineTo(x + w, y + h * 0.62);
+  ctx.closePath(); ctx.fill();
+  ctx.shadowColor = 'transparent';
+}
+function drawHand(R) {
+  // palm and wrist: behind the phone
+  const { x, y, w, h } = R;
+  ctx.save();
+  ctx.beginPath(); ctx.rect(0, 0, W, H); ctx.roundRect(x - 14, y - 14, w + 28, h + 28, R.r + 14); ctx.clip('evenodd');
+  paintPalm(R, true);
+  ctx.restore();
+}
+let _tc = null;
+function thumbCanvas() { if (!_tc) { _tc = document.createElement('canvas'); _tc.width = W; _tc.height = H; } return _tc; }
+function drawThumb(R) {
+  // fingers and thumb in front of the phone; they wrap onto the screen a little, as in a real grip
+  const { x, y, w, h } = R;
+  ctx.save();
+  // fingertips on the left: index mostly hidden behind the phone, then three full pads
+  [[0.80, 80, 70, 30], [0.70, 88, 84, 38], [0.60, 88, 86, 38], [0.505, 76, 64, 18]].forEach(([fy, th, out, over]) => {
+    const cy = y + h * fy, x1 = x - 14 - out, x2 = x + over, r = th / 2;
+    ctx.fillStyle = clayFill(x1 + r, cy, r * 1.3);
+    ctx.shadowColor = 'rgba(0,0,0,0.22)'; ctx.shadowBlur = 18; ctx.shadowOffsetX = 4; ctx.shadowOffsetY = 6;
+    ctx.beginPath(); ctx.roundRect(x1, cy - r, x2 - x1, th, r); ctx.fill();
+    ctx.shadowColor = 'transparent'; ctx.shadowOffsetX = 0;
+    // soft crease where the pad bends round the edge
+    const cg = ctx.createLinearGradient(x - 30, 0, x + 6, 0);
+    cg.addColorStop(0, 'rgba(0,0,0,0)'); cg.addColorStop(0.6, 'rgba(0,0,0,0.07)'); cg.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = cg; ctx.beginPath(); ctx.roundRect(x1, cy - r, x2 - x1, th, r); ctx.fill();
+  });
+  // thumb: tip on the lower right of the screen, inner edge running down beside the phone's right edge,
+  // outer edge sweeping to the lower right as the side of the hand; the bottom fades into the palm
+  const tc = thumbCanvas(); const c = tc.getContext('2d');
+  c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, W, H);
+  const X = x + w;
+  const tg = c.createLinearGradient(X - 90, y + h * 0.55, X + 200, y + h * 0.75);
+  tg.addColorStop(0, SKIN.hi); tg.addColorStop(0.45, SKIN.mid); tg.addColorStop(1, SKIN.lo);
+  c.fillStyle = tg;
+  c.shadowColor = 'rgba(0,0,0,0.24)'; c.shadowBlur = 24; c.shadowOffsetX = -6; c.shadowOffsetY = 8;
+  c.beginPath();
+  c.moveTo(X - 82, y + h * 0.585);                                          // inner side of the tip
+  c.bezierCurveTo(X - 70, y + h * 0.68, X - 20, y + h * 0.76, X + 12, y + h * 0.80); // inner edge onto the frame
+  c.lineTo(X + 14, H + 60);                                                 // straight down beside the phone
+  c.lineTo(X + 240, H + 60);
+  c.bezierCurveTo(X + 170, y + h * 0.95, X + 110, y + h * 0.79, X + 70, y + h * 0.68); // outer edge
+  c.bezierCurveTo(X + 40, y + h * 0.6, X + 5, y + h * 0.535, X - 38, y + h * 0.535);  // over the top of the tip
+  c.bezierCurveTo(X - 70, y + h * 0.535, X - 86, y + h * 0.555, X - 82, y + h * 0.585); // round tip
+  c.closePath(); c.fill();
+  c.shadowColor = 'transparent';
+  // soft highlight on the pad and a faint knuckle fold
+  const hl = c.createRadialGradient(X - 40, y + h * 0.565, 2, X - 40, y + h * 0.575, 50);
+  hl.addColorStop(0, 'rgba(255,255,255,0.45)'); hl.addColorStop(1, 'rgba(255,255,255,0)');
+  c.fillStyle = hl; c.beginPath(); c.arc(X - 40, y + h * 0.575, 50, 0, 7); c.fill();
+  c.strokeStyle = 'rgba(0,0,0,0.07)'; c.lineWidth = 3;
+  c.beginPath(); c.moveTo(X + 8, y + h * 0.7); c.quadraticCurveTo(X + 40, y + h * 0.69, X + 72, y + h * 0.71); c.stroke();
+  // fade the bottom into the palm
+  c.globalCompositeOperation = 'destination-in';
+  const fm = c.createLinearGradient(0, y + h - 30, 0, y + h + 90);
+  fm.addColorStop(0, 'rgba(0,0,0,1)'); fm.addColorStop(1, 'rgba(0,0,0,0)');
+  c.fillStyle = fm; c.fillRect(0, 0, W, H);
+  c.globalCompositeOperation = 'source-over';
+  ctx.drawImage(tc, 0, 0);
+  ctx.restore();
+}
+function drawPhoneFrame(R) {
+  ctx.fillStyle = '#0d0d0d';
+  ctx.beginPath(); ctx.roundRect(R.x - 14, R.y - 14, R.w + 28, R.h + 28, R.r + 14); ctx.roundRect(R.x, R.y, R.w, R.h, R.r); ctx.fill('evenodd');
+  ctx.strokeStyle = '#3a3a3a'; ctx.lineWidth = 2; rr(R.x - 14, R.y - 14, R.w + 28, R.h + 28, R.r + 14); ctx.stroke();
+  ctx.fillStyle = '#000'; rr(R.x + R.w / 2 - 52, R.y + 12, 104, 30, 15); ctx.fill();
+}
+function drawARUI(t, R, p) {
+  ctx.save(); rr(R.x, R.y, R.w, R.h, R.r); ctx.clip();
+  const u = R.w / 390;
+  ctx.translate(R.x, R.y); ctx.scale(u, u);
+  // status
+  text('9:41', 34, 34, 15, { w: 600, color: C.ink, track: 0 });
+  // instruction card
+  ctx.fillStyle = 'rgba(11,11,11,0.9)'; rr(14, 58, 362, 118, 24); ctx.fill();
+  ctx.fillStyle = C.blue; ctx.beginPath(); ctx.arc(66, 117, 32, 0, 7); ctx.fill();
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 5; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.beginPath(); ctx.moveTo(66, 134); ctx.lineTo(66, 100); ctx.moveTo(53, 112); ctx.lineTo(66, 99); ctx.lineTo(79, 112); ctx.stroke();
+  text(`${Math.round(lerp(24, 17, p))} m`, 114, 116, 40, { w: 600, color: '#fff', track: 0.01 });
+  ctx.fillStyle = C.yellow; ctx.fillRect(114, 135, 11, 11);
+  text('Then elevator to Level 3', 134, 146, 17, { color: '#d9d9d9' });
+  text('ETA', 356, 88, 12, { w: 600, align: 'right', color: '#9a9a9a', track: 0.12 });
+  text('9:47', 356, 116, 24, { w: 600, align: 'right', color: '#fff', track: 0.01 });
+  // section view card
+  const cy = 844 - 232;
+  ctx.fillStyle = 'rgba(255,255,255,0.96)'; rr(14, cy, 362, 196, 24); ctx.fill();
+  ctx.strokeStyle = '#e6e6e6'; ctx.lineWidth = 1; rr(14.5, cy + .5, 361, 195, 24); ctx.stroke();
+  text('SECTION VIEW', 34, cy + 34, 12, { w: 600, color: C.muted, track: 0.12 });
+  text('6 min · arrive 9:47', 356, cy + 34, 14, { w: 600, align: 'right' });
+  const L1 = cy + 160, L3y = cy + 80, sx = 180;
+  ctx.strokeStyle = C.ink; ctx.lineWidth = 2;
+  [L1, L3y].forEach(y => { ctx.beginPath(); ctx.moveTo(34, y); ctx.lineTo(356, y); ctx.stroke(); });
+  ctx.strokeStyle = '#cfcfcf'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(34, cy + 120); ctx.lineTo(356, cy + 120); ctx.stroke();
+  ctx.strokeStyle = C.ink; ctx.lineWidth = 2; ctx.strokeRect(sx - 14, L3y - 30, 28, L1 - L3y + 30);
+  ctx.fillStyle = C.yellow; ctx.fillRect(sx - 6, L3y - 22, 12, 12);
+  text('L1', 34, L1 - 8, 11, { color: C.muted }); text('L3', 34, L3y - 8, 11, { color: C.muted });
+  ctx.fillStyle = C.blue;
+  const dot = (x, y) => { ctx.beginPath(); ctx.arc(x, y, 3, 0, 7); ctx.fill(); };
+  for (let x = 62; x < sx; x += 10) dot(x, L1 - 10);
+  for (let y = L1 - 10; y > L3y - 10; y -= 10) dot(sx, y);
+  for (let x = sx; x < 330; x += 10) dot(x, L3y - 10);
+  ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(334, L3y - 10, 6, 0, 7); ctx.fill();
+  const you = lerp(70, 150, p), pr = (t * 1.2) % 1;
+  ctx.fillStyle = `rgba(29,78,216,${0.35 * (1 - pr)})`; ctx.beginPath(); ctx.arc(you, L1 - 10, 8 + pr * 10, 0, 7); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(you, L1 - 10, 8, 0, 7); ctx.fill();
+  ctx.fillStyle = C.blue; ctx.beginPath(); ctx.arc(you, L1 - 10, 5.5, 0, 7); ctx.fill();
+  ctx.restore();
+  // floating AR tag on the elevator
+  const q = project(ELEV, camP, R);
+  if (q.z < 1) pill('Elevator · Level 3', q.x, q.y - 26, { px: 17, dot: C.yellow });
+}
+
+function renderAR(t) {
+  const p = prog(t, T.ar);
+  const walk = lerp(1.2, -3.2, p);
+  camA.position.set(0.12, 1.62 + Math.sin(t * 6.2) * 0.012, walk);
+  camA.lookAt(0.05, 1.35, walk - 10);
+  camA.updateMatrixWorld();
+  // full view without the AR layer
+  arPath.visible = false;
+  renderer.setScissorTest(false); renderer.setViewport(0, 0, W, H);
+  renderer.render(sceneA, camA);
+  const R = phoneRect(t);
+  ctx.save();
+  ctx.beginPath(); ctx.rect(0, 0, W, H); ctx.roundRect(R.x, R.y, R.w, R.h, R.r); ctx.clip('evenodd');
+  ctx.filter = 'blur(7px)'; ctx.drawImage(glCanvas, -20, -20, W + 40, H + 40); ctx.filter = 'none';
+  ctx.restore();
+  // phone camera view with the AR layer
+  camP.position.set(0.18, 1.45 + Math.sin(t * 6.2) * 0.012, walk - 0.35);
+  camP.lookAt(0.05, 1.05, walk - 10);
+  camP.updateMatrixWorld();
+  const flow = (t * 1.6) % 2.2;
+  chevs.forEach((m, i) => { const z = 0.5 - i * 2.2 - flow; m.position.set(0, 0.015, z); m.material.opacity = clamp((z - walk + 26) / 4) * 0.95; m.visible = z > -25; });
+  arPath.visible = true;
+  const gy = H - R.y - R.h;
+  renderer.setScissorTest(true);
+  renderer.setScissor(R.x, gy, R.w, R.h); renderer.setViewport(R.x, gy, R.w, R.h);
+  renderer.render(sceneA, camP);
+  renderer.setScissorTest(false); renderer.setViewport(0, 0, W, H);
+  return { R, p };
+}
+
+function scene3Overlay(t, R, p) {
+  // focus: soften the world around the phone
+  ctx.fillStyle = 'rgba(0,0,0,0.06)';
+  ctx.beginPath(); ctx.rect(0, 0, W, H); ctx.roundRect(R.x - 14, R.y - 14, R.w + 28, R.h + 28, R.r + 14); ctx.fill('evenodd');
+  drawHand(R);
+  drawPhoneFrame(R);
+  // fingertips over the frame edge
+  drawARUI(t, R, p);
+  drawThumb(R);
+  const ca = eOut(prog(t, [T.ar[0] + 0.45, T.ar[0] + 1.05]));
+  text('Follow the line.', 150, 470, 72, { w: 600, alpha: ca, track: 0.01 });
+  text('Live AR guidance, with a section', 152, 536, 30, { color: '#3d3d3d', alpha: ca });
+  text('view at every level change.', 152, 576, 30, { color: '#3d3d3d', alpha: ca });
+}
+
+/* --------------------------------------------------------------------------
+   End card
+   -------------------------------------------------------------------------- */
+function endCard(t) {
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+  const a = eOut(prog(t, T.endText));
+  ctx.save(); ctx.filter = `blur(${(1 - a) * 14}px)`;
+  text('WalkAbout', W / 2, 520, lerp(150, 140, a), { w: 600, color: '#fff', align: 'center', base: 'middle', alpha: a, track: 0.02 });
+  ctx.restore();
+  const b = eOut(prog(t, [T.endText[0] + 0.35, T.endText[0] + 0.95]));
+  text('From street to room, for everybody.', W / 2, 640, 40, { color: '#a8a8a8', align: 'center', alpha: b });
+}
+
+/* ==========================================================================
+   Frame
+   ========================================================================== */
+function renderFrame(t) {
+  ctx.clearRect(0, 0, W, H);
+  ctx.globalAlpha = 1; ctx.filter = 'none';
+  renderer.setClearColor(0x000000, 1);
+
+  if (t < T.model[0]) {
+    renderer.clear();
+    scene1(t);
+  } else if (t < T.model[1]) {
+    const st = updateModel(t);
+    renderer.render(sceneM, camM);
+    scene2Overlay(t, st);
+    if (t < T.uiOut[1]) { ctx.save(); ctx.globalAlpha = 1 - eOut(prog(t, T.uiOut)); scene1(t); ctx.restore(); }
+    const wf = prog(t, T.white);
+    if (wf > 0) { ctx.fillStyle = `rgba(255,255,255,${eInOut(wf)})`; ctx.fillRect(0, 0, W, H); }
+  } else if (t < T.endFade[1]) {
+    const { R, p } = renderAR(t);
+    scene3Overlay(t, R, p);
+    const wi = 1 - prog(t, T.arIn);
+    if (wi > 0) { ctx.fillStyle = `rgba(255,255,255,${eInOut(wi)})`; ctx.fillRect(0, 0, W, H); }
+    const bf = prog(t, T.endFade);
+    if (bf > 0) { ctx.fillStyle = `rgba(0,0,0,${eInOut(bf)})`; ctx.fillRect(0, 0, W, H); }
+  } else {
+    renderer.clear();
+    endCard(t);
+  }
+  // honest label: the product is not built yet
+  const dark = t < T.model[0] + 0.3 || t >= T.endFade[1] - 0.2;
+  text('Concept visualization', W - 48, H - 40, 18, { color: dark ? '#8a8a8a' : '#6a6a6a', align: 'right', alpha: 0.9 });
+}
+
+window.DUR = DUR; window.FPS = FPS; window.renderFrame = renderFrame;
+window.ready = document.fonts.ready.then(() => document.fonts.load(`600 40px Jost`)).then(() => document.fonts.load(`500 40px Jost`)).then(() => true);
+
+const params = new URLSearchParams(location.search);
+function fit() { const s = Math.min(innerWidth / W, innerHeight / H); document.getElementById('stage').style.transform = `scale(${s})`; }
+if (!params.has('capture')) { fit(); addEventListener('resize', fit); }
+if (params.has('t')) window.ready.then(() => renderFrame(parseFloat(params.get('t'))));
+else if (params.has('play')) window.ready.then(() => { const t0 = performance.now(); (function loop() { renderFrame(((performance.now() - t0) / 1000) % DUR); requestAnimationFrame(loop); })(); });
+</script>
+</body>
+</html>

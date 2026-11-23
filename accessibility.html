@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Accessibility | WalkAbout</title>
+  <meta name="description" content="What people told us about getting lost in buildings, and what the ADA building standards already require.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Futura PT: add your Adobe Fonts kit here, e.g. <link rel="stylesheet" href="https://use.typekit.net/XXXXXXX.css">. Jost below is the free stand-in. -->
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css?v=20261123s">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ============================== HEADER ============================== -->
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html" aria-label="WalkAbout home">
+        WalkAbout
+      </a>
+      <nav class="nav" id="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="navigate.html">Navigate</a></li>
+          <li><a href="technology.html">Technology</a></li>
+          <li><a href="accessibility.html" aria-current="page">Accessibility</a></li>
+          <li><a href="about.html">About</a></li>
+        </ul>
+      </nav>
+      <button class="btn btn--small header-cta" data-open-check>Find your route</button>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- 1. INTRO: holds in place, then the voices wall slides up over it (like Navigate) -->
+    <div class="pin-scope">
+    <section class="hero pin-hold">
+      <div class="wrap">
+        <p class="eyebrow">Accessibility</p>
+        <h1>The shortest route isn't always one you can use.</h1>
+        <p class="lede">We asked people how they find their way through unfamiliar buildings. Here is what gets in their way, in their own words, and what the building standards already promise.</p>
+      </div>
+    </section>
+
+    <!-- 2. VOICES: scattered pain points, filtered by who is traveling -->
+    <section class="band band--white voices-band cover-up pin-hold pin-hold--tall" aria-labelledby="voices-h">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="voices-h">What people told us</h2>
+          <p class="lede">Every phrase is a real answer from our questionnaire. Move across the wall to bring voices into focus, and select one to read it.</p>
+        </div>
+
+        <div class="personas" role="group" aria-label="Show pain points for">
+          <button class="persona" aria-pressed="true" data-persona="all">Everyone</button>
+          <button class="persona" aria-pressed="false" data-persona="first">First time in the building</button>
+          <button class="persona" aria-pressed="false" data-persona="carry">Luggage or a stroller</button>
+          <button class="persona" aria-pressed="false" data-persona="care">Caring for someone</button>
+          <button class="persona" aria-pressed="false" data-persona="mobility">Injured or using a cane</button>
+          <button class="persona" aria-pressed="false" data-persona="older">Over 60</button>
+        </div>
+        <p class="voices-count sr-only" aria-live="polite"></p>
+      </div>
+
+      <!-- The wall is built by assets/js/voices.js from the survey answers listed there -->
+      <div class="wrap">
+      <div class="wall" id="wall" role="group" aria-label="Survey answers. Use the arrow keys to move between them.">
+        <div class="wall-card" id="wall-card" role="status" hidden></div>
+        <span class="wall-burst" id="wall-burst" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+        <noscript><p>Turn on JavaScript to see the survey answers. In short: 63% lost five or more minutes inside, 59% had to ask a stranger, and 40% went to the wrong floor or took a long detour.</p></noscript>
+      </div>
+      </div>
+
+      <div class="wrap">
+        <p class="voices-note">From our questionnaire of November 2026.</p>
+      </div>
+    </section>
+    <!-- Hold: the wall stays still for this much scrolling before the next section arrives -->
+    <div class="pin-gap" aria-hidden="true"></div>
+
+    <!-- 3. WHERE IT BREAKS: six findings that slide sideways; slides up over the voices wall.
+         Percentages only: never show how many people answered. -->
+    <section class="band cover-up cover-up--full findings pin-hold pin-hold--tall" aria-labelledby="findings-h" aria-roledescription="carousel">
+      <div class="wrap findings__bar">
+        <h2 id="findings-h" class="eyebrow">Where it breaks</h2>
+        <div class="findings__nav">
+          <p class="findings__count" aria-hidden="true"><span class="findings__now">01</span> / 06</p>
+          <button class="findings__arrow" type="button" data-dir="-1" aria-label="Previous finding">&larr;</button>
+          <button class="findings__arrow" type="button" data-dir="1" aria-label="Next finding">&rarr;</button>
+        </div>
+      </div>
+
+      <div class="findings__track" tabindex="0" aria-label="Survey findings. Swipe, drag or use the arrow keys to move between them.">
+
+        <article class="finding" aria-roledescription="slide" aria-label="1 of 6">
+          <div class="wrap split split--top">
+            <div>
+              <p class="big-stat" aria-hidden="true">87%</p>
+              <h3>It happens all the time</h3>
+              <p class="lede"><span class="sr-only">87% </span>walked into at least one unfamiliar building in the past month.</p>
+            </div>
+            <figure class="bars">
+              <figcaption>Unfamiliar buildings entered last month</figcaption>
+              <ul style="--max:42">
+                <li style="--v:13"><span>None</span><b>13%</b></li>
+                <li class="is-handoff" style="--v:42"><span>1 to 3</span><b>42%</b></li>
+                <li class="is-handoff" style="--v:30"><span>3 to 6</span><b>30%</b></li>
+                <li class="is-handoff" style="--v:13"><span>6 to 10</span><b>13%</b></li>
+                <li class="is-handoff" style="--v:2"><span>More than 10</span><b>2%</b></li>
+              </ul>
+            </figure>
+          </div>
+        </article>
+
+        <article class="finding" aria-roledescription="slide" aria-label="2 of 6">
+          <div class="wrap split split--top">
+            <div>
+              <p class="big-stat" aria-hidden="true">60%</p>
+              <h3>People get lost in the handoffs</h3>
+              <p class="lede"><span class="sr-only">60% </span>said the hardest step was a handoff: the entrance, another building or the right floor.</p>
+              <p class="big-stat__sum">35% + 15% + 10%</p>
+            </div>
+            <figure class="bars">
+              <figcaption>The hardest step</figcaption>
+              <ul style="--max:35">
+                <li class="is-handoff" style="--v:35"><span>Finding the entrance</span><b>35%</b></li>
+                <li style="--v:27"><span>Finding the room</span><b>27%</b></li>
+                <li class="is-handoff" style="--v:15"><span>Between buildings</span><b>15%</b></li>
+                <li class="is-handoff" style="--v:10"><span>Finding the floor</span><b>10%</b></li>
+                <li style="--v:7"><span>Finding the building</span><b>7%</b></li>
+                <li style="--v:6"><span>Nothing was hard</span><b>6%</b></li>
+              </ul>
+              <p class="bars__key"><i></i>A handoff between spaces</p>
+            </figure>
+          </div>
+        </article>
+
+        <article class="finding" aria-roledescription="slide" aria-label="3 of 6">
+          <div class="wrap split split--top">
+            <div>
+              <p class="big-stat" aria-hidden="true">5+ min</p>
+              <h3>Getting lost costs time</h3>
+              <p class="lede"><span class="sr-only">Five minutes or more </span>lost finding the way inside, for 63% of people.</p>
+            </div>
+            <figure class="bars">
+              <figcaption>Extra time spent inside</figcaption>
+              <ul style="--max:46">
+                <li style="--v:9"><span>None</span><b>9%</b></li>
+                <li style="--v:28"><span>Up to 5 minutes</span><b>28%</b></li>
+                <li class="is-handoff" style="--v:46"><span>5 to 10 minutes</span><b>46%</b></li>
+                <li class="is-handoff" style="--v:14"><span>10 to 20 minutes</span><b>14%</b></li>
+                <li class="is-handoff" style="--v:3"><span>Over 20 minutes</span><b>3%</b></li>
+              </ul>
+            </figure>
+          </div>
+        </article>
+
+        <article class="finding" aria-roledescription="slide" aria-label="4 of 6">
+          <div class="wrap split split--top">
+            <div>
+              <p class="big-stat" aria-hidden="true">59%</p>
+              <h3>So they ask a stranger</h3>
+              <p class="lede"><span class="sr-only">59% </span>had to ask staff or a passer-by. Some never arrived at all.</p>
+            </div>
+            <figure class="bars">
+              <figcaption>What happened</figcaption>
+              <ul style="--max:59">
+                <li class="is-handoff" style="--v:59"><span>Asked someone</span><b>59%</b></li>
+                <li class="is-handoff" style="--v:40"><span>Wrong floor or detour</span><b>40%</b></li>
+                <li style="--v:25"><span>Phoned for help</span><b>25%</b></li>
+                <li style="--v:11"><span>Arrived late</span><b>11%</b></li>
+                <li style="--v:8"><span>Gave up</span><b>8%</b></li>
+              </ul>
+            </figure>
+          </div>
+        </article>
+
+        <article class="finding" aria-roledescription="slide" aria-label="5 of 6">
+          <div class="wrap split split--top">
+            <div>
+              <p class="big-stat big-stat--words" aria-hidden="true">Malls.<br>Stations.<br>Hospitals.</p>
+              <h3>Where it feels hardest</h3>
+              <p class="lede"><span class="sr-only">Malls, stations and hospitals. </span>Hospitals, where we start, rank close behind malls and stations.</p>
+            </div>
+            <figure class="bars">
+              <figcaption>Where it feels hard</figcaption>
+              <ul style="--max:49">
+                <li style="--v:49"><span>Shopping malls</span><b>49%</b></li>
+                <li style="--v:48"><span>Stations and airports</span><b>48%</b></li>
+                <li style="--v:41"><span>Underground parking</span><b>41%</b></li>
+                <li class="is-handoff" style="--v:40"><span>Hospitals</span><b>40%</b></li>
+                <li style="--v:33"><span>Offices and hotels</span><b>33%</b></li>
+                <li class="is-handoff" style="--v:21"><span>University campuses</span><b>21%</b></li>
+              </ul>
+              <p class="bars__key"><i></i>Where WalkAbout starts</p>
+            </figure>
+          </div>
+        </article>
+
+        <article class="finding" aria-roledescription="slide" aria-label="6 of 6">
+          <div class="wrap split split--top">
+            <div>
+              <p class="big-stat" aria-hidden="true">83%</p>
+              <h3>And they want this</h3>
+              <p class="lede"><span class="sr-only">83% </span>would likely use it at their school, hospital or mall.</p>
+            </div>
+            <figure class="bars">
+              <figcaption>How likely they are to use it</figcaption>
+              <ul style="--max:54">
+                <li class="is-handoff" style="--v:29"><span>Very likely</span><b>29%</b></li>
+                <li class="is-handoff" style="--v:54"><span>Likely</span><b>54%</b></li>
+                <li style="--v:13"><span>Not sure</span><b>13%</b></li>
+                <li style="--v:4"><span>Unlikely</span><b>4%</b></li>
+              </ul>
+            </figure>
+          </div>
+        </article>
+      </div>
+
+      <div class="wrap findings__foot">
+        <div class="findings__dots" role="group" aria-label="Go to a finding">
+          <button type="button" aria-label="Finding 1" aria-current="true"></button>
+          <button type="button" aria-label="Finding 2"></button>
+          <button type="button" aria-label="Finding 3"></button>
+          <button type="button" aria-label="Finding 4"></button>
+          <button type="button" aria-label="Finding 5"></button>
+          <button type="button" aria-label="Finding 6"></button>
+        </div>
+        <p class="findings__hint" aria-hidden="true">Swipe or drag &rarr;</p>
+      </div>
+    </section>
+
+    <div class="pin-gap" aria-hidden="true"></div>
+
+    <!-- 4. THE STANDARDS: text only. What the code covers vs. what it leaves to the traveler -->
+    <section class="band band--white standards cover-up pin-hold pin-hold--tall" aria-labelledby="ada-h">
+      <div class="wrap split standards__split">
+        <div>
+          <p class="eyebrow">The standards</p>
+          <h2 id="ada-h" class="standards__title">Meeting the code isn't the same as finding your way</h2>
+          <p class="lede standards__lede">A building can pass every accessibility check and still leave people lost. The ADA sets minimums for what is built, not for how anyone finds it.</p>
+          <p class="voices-note">Source: U.S. Department of Justice, 2010 ADA Standards for Accessible Design.</p>
+        </div>
+
+        <div class="standards__cols">
+          <div>
+            <h3 class="standards__h">The code covers</h3>
+            <ul class="standards__list">
+              <li>Ramps that aren't too steep</li>
+              <li>Doors wide enough for a wheelchair</li>
+              <li>Lifts between floors</li>
+              <li>Accessible restrooms</li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="standards__h standards__h--gap">It leaves you to work out</h3>
+            <ul class="standards__list standards__list--gap">
+              <li>Which entrance works for you</li>
+              <li>Which lift reaches the bridge</li>
+              <li>How one building connects to the next</li>
+              <li>What's out of service today</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="pin-gap" aria-hidden="true"></div>
+
+    <!-- 5. WHAT WE BUILD FROM IT: pick a need on the left, the feature that answers it grows on the right.
+         Tabs (main.js). Without JS every feature shows under its need. -->
+    <section class="band cover-up cover-up--full wants-band" aria-labelledby="build-h">
+      <div class="wrap">
+        <p class="eyebrow">What we build from it</p>
+        <h2 id="build-h">Every feature answers what people told us</h2>
+
+        <div class="wants">
+          <div class="wants__needs">
+            <p class="wants__label">What people want</p>
+            <div class="wants__tabs" role="tablist" aria-orientation="vertical" aria-label="What people want">
+              <button class="wants__tab" role="tab" id="want-1" aria-controls="feat-1" aria-selected="true">The nearest entrance</button>
+              <button class="wants__tab" role="tab" id="want-2" aria-controls="feat-2" aria-selected="false" tabindex="-1">Which lift or stair to take</button>
+              <button class="wants__tab" role="tab" id="want-3" aria-controls="feat-3" aria-selected="false" tabindex="-1">Fewer level changes</button>
+              <button class="wants__tab" role="tab" id="want-4" aria-controls="feat-4" aria-selected="false" tabindex="-1">One route from the street</button>
+              <button class="wants__tab" role="tab" id="want-5" aria-controls="feat-5" aria-selected="false" tabindex="-1">Not having to ask a stranger</button>
+            </div>
+          </div>
+
+          <div class="wants__features">
+            <p class="wants__label wants__label--blue">What we build</p>
+            <div class="wants__panel" role="tabpanel" id="feat-1" aria-labelledby="want-1">
+              <h3>The right door, first</h3>
+              <p>WalkAbout picks the best entrance for where you're going and how you move, and shows you a photo of the door.</p>
+            </div>
+            <div class="wants__panel" role="tabpanel" id="feat-2" aria-labelledby="want-2">
+              <h3>A section view at every level change</h3>
+              <p>At each lift, ramp or stair, a section drawing shows which one to take and which floor to get out on.</p>
+            </div>
+            <div class="wants__panel" role="tabpanel" id="feat-3" aria-labelledby="want-3">
+              <h3>Routes for how you move</h3>
+              <p>Step-free, stroller, luggage, fewest level changes, fastest. Choose several and get one route that works for all of them.</p>
+            </div>
+            <div class="wants__panel" role="tabpanel" id="feat-4" aria-labelledby="want-4">
+              <h3>Street to room, in one route</h3>
+              <p>Directions start on the sidewalk and carry on through the door and across buildings, all the way to the room.</p>
+            </div>
+            <div class="wants__panel" role="tabpanel" id="feat-5" aria-labelledby="want-5">
+              <h3>Directions you can trust</h3>
+              <p>Live elevator status, closures and barrier reports keep your route right, so you don't have to stop and ask.</p>
+            </div>
+          </div>
+        </div>
+
+        <p class="voices-note">Few of our respondents were wheelchair users. We want to hear from more disabled travelers: <a href="mailto:[team@email]"><span class="ph">[team@email]</span></a>.</p>
+      </div>
+    </section>
+
+    </div><!-- /pin-scope -->
+
+    <!-- 6. CHECK -->
+    <section class="band band--ink" id="check" aria-labelledby="check-h">
+      <div class="wrap check">
+        <div>
+          <h2 id="check-h">Is my building mapped?</h2>
+          <p class="lede">Check a campus or building. If it isn't mapped yet, join the waitlist and we'll tell you when it is.</p>
+        </div>
+        <div>
+          <form class="check-form" novalidate>
+            <label for="place-inline">Campus or building</label>
+            <div class="form-row">
+              <input id="place-inline" type="text" name="place" autocomplete="off" placeholder="e.g. MIT Building E52">
+              <button class="btn" type="submit">Check</button>
+            </div>
+          </form>
+          <div class="check-result form-msg" role="status"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================== FOOTER ============================== -->
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div>
+          <a class="brand" href="index.html">WalkAbout</a>
+          <p class="hint"><span class="ph">[One-line description]</span></p>
+        </div>
+        <div>
+          <h3>Product</h3>
+          <ul>
+            <li><a href="navigate.html">Navigate</a></li>
+            <li><a href="technology.html">Technology</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Company</h3>
+          <ul>
+            <li><a href="about.html">About</a></li>
+            <li><a href="#">Press kit <span class="ph">[soon]</span></a></li>
+            <li><a href="#">Join the team <span class="ph">[soon]</span></a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Contact</h3>
+          <ul>
+            <li><a href="mailto:[team@email]"><span class="ph">[team@email]</span></a></li>
+            <li><a href="#">Accessibility statement <span class="ph">[soon]</span></a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="footer-note">Films and images on this site show concept visualizations of the planned experience. &copy; 2026 WalkAbout</p>
+    </div>
+  </footer>
+
+  <!-- ===================== "IS MY BUILDING MAPPED?" ===================== -->
+  <dialog id="check-dialog" aria-labelledby="check-dialog-h">
+    <button class="dialog__close" aria-label="Close">&times;</button>
+    <div class="dialog__body">
+      <h2 id="check-dialog-h" style="font-size:var(--t-lg)">Is my building mapped?</h2>
+      <form class="check-form" novalidate>
+        <label for="place-dialog">Campus or building</label>
+        <div class="form-row">
+          <input id="place-dialog" type="text" name="place" autocomplete="off" placeholder="e.g. MIT Building E52">
+          <button class="btn" type="submit">Check</button>
+        </div>
+      </form>
+      <div class="check-result form-msg" role="status"></div>
+    </div>
+  </dialog>
+
+  <script src="assets/js/main.js?v=20261123s"></script>
+  <script src="assets/js/voices.js?v=20261123s"></script>
+</body>
+</html>
